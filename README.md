@@ -1,0 +1,1 @@
+Zusammenfassungen für die HSR-Module
