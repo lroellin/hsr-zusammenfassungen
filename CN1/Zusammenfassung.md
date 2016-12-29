@@ -1708,7 +1708,176 @@ ICMP darf fragmentiert werden
 
 # Versuch 4 - Ethernet MAC/Switch
 
+## Link Integrity Puls
+
+### Normal Link Puls
+
+Bei 10Base-T wird etwa alle 16±8ms ein Link Pulse von 100ns Dauer gesendet wenn keine Datenpakete zu übertragen sind. Falls während mehr als 150ms keine Datenpakete und auch keine Link Pulse empfangen werden, so wird angenommen dass der Link zur Nachbarstation unterbrochen ist. 
+
+## Autonegotiation
+
+Um die Geschwindigkeit und den Duplex Mode auszuhandeln, wurde Auto Negotiation eingeführt. Dazu tauschen die Stationen Informationen über Fast Link Pulse (FLP) aus. 
+
+Mit einem 16 Bit Link Code Word (LCW) wird beim Start der Ethernet-Verbindung signalisiert, welche Standards das Interface unterstützt. Das LCQ besteht aus Taktpulsen gefolgt von Datenpulsen. Der Taktpuls wird für jedes Bit gesendet. Falls ein Datenpuls folgt ist der Wert logisch 1, falls er fehlt logisch 0.
+
+## Duplex Mismatch
+
+Bei einem Duplex Mismatch interpretiert die HD-Maschine die eingehenden Pakete als Kollision und bricht das Senden ab.
+
+## Formeln
+
+### maximal mögliche UDP Datenrate
+
+gegeben: UDP Packet Size UDP~SDU~ und Ethernet-Datenrate R~Ethernet~.
+$$
+R_{UDP-max} = R_{Ethernet} * UDP_{SDU}/(PHY_{PDU}+InterframeGap)
+$$
+
+$$
+R_{UDP-max}=R_{Ethernet}*UDP_{SDU}/(UDP_{SDU}+UDP_{Header}+IP_{Header}+MAC_{Header}+CRC+Preamble+InterframeGap)
+$$
+
+### Interframe Gap
+
+$$
+InterframeGap [Byte]=((R_{Ethernet}/R_{UDP})*UDP_{SDU})-PHY_{PDU}
+$$
+
+
+
 # Vorlesungswoche 9 - IPv6
+
+* Vergrösserung auf 2^128^ Adressen
+* Vereinfachung der Header-Informationen (weniger Belastung für Router)
+* Automatische Konfiguration
+* Mobile IP
+* IPsec als Teil des Protokolls
+* Unterstützung von QoS und Multicast
+
+![16B0E187-F36B-4374-A682-5021912E3050](Zusammenfassung-Bilder/16B0E187-F36B-4374-A682-5021912E3050.png)
+
+40 Byte IPv6 Header (fix). Andere Header werden in die Payload miteingebunden. 
+
+* Version: 6
+* Traffic Class (QoS)
+* Flow Label
+  * Jede Source wählt ihre eigenen Flow Label, Router benutzen die Source Address und das Flow Label um Flows zu identifizieren
+  * Flow Label Value ist 0, wenn kein QoS gewünscht ist
+* Payload Length
+* Next Header: gibt an, was dem IPv6 Header folgt. Ähnlich dem Protocol Field von IPv4 und benutzt selbe Werte
+* Hop Limit: TTL, aber diesmal Hops gemeint
+
+## Addressierungsarten
+
+* Unicast
+* Multicast
+  * ff00::/8
+* Anycast
+  * der "naheste" soll antworten (oftmals mittels Routing-Protokoll entschieden)
+
+## Schreibweisen 
+
+* Hexadezimal: 8 Blöcke mit je 4 Hex-Zeichen
+
+  * `2001:0db8:0000:0000:08d3:1319:8a2e:0374`
+
+* Abkürzungen
+
+  * Führende Nullen innerhalb eines Blocks kann man weglassen
+
+    * ```
+      2001:0db8:0000:0000:08d3:1319:8a2e:0374
+      2001: db8:   0:   0: 8d3:1319:8a2e: 374
+      ```
+
+  * Pro Adresse darf ==eine== Gruppe aufeinanderfolgender 0-Blöcke ausgelassen und durch zwei Doppelpunkte angezeigt werden
+
+    * ```
+      2001:0db8:0000:0000:08d3:1319:8a2e:0374
+      2001: db8     ::     8d3:1319:8a2e: 374
+      ```
+
+  * Für die letzten 32 Bit kan man auch Dezimal Notation verwenden
+
+    * ```
+      2001:0db8:0000:0000:08d3:1319:8a2e:0374
+      2001: db8     ::     8d3:1319: 138.46.7.52
+      ```
+
+  * Im URL werden IPv6-Adressen in eckigen Klammern angegeben, da sie sonst als Portnummern interpretiert werden könnten.
+
+## Struktur
+
+![29F3E92C-576A-48AA-810F-F85BE7063F85](Zusammenfassung-Bilder/29F3E92C-576A-48AA-810F-F85BE7063F85.png)
+
+Die IANA hat einige Addressen fix vergeben
+
+* 2001::/32 Teredo
+* 2001:db8::/32 Dokumentation
+* 2002::/16 6to4
+
+Der Host-Teil ist immer 64Bit gross.
+
+## Mehrere Adressen
+
+Eine IPv6 Schnittstelle kann unter mehreren Adressen erreicht werden
+
+* Link Local: fe80::/64 (1111 1110::)
+  * Jeder IPv6-Rechner muss eine Link Local Adresse haben
+  * Link Local Addressen werden von Routern nicht weitergeleitet
+  * Der Hostteil der Link Local adressen wird aus der MAC-Adresse abgeleitet oder zufällig gewählt (bei aktivierten Privacy Extensions)
+* Globale Addresse: 2000::/3 (001…) (2000 bis 3fff)
+  * Global Unicast, weltweit gültige von Routern weitergeleitete Adresse (0010)
+* Loopback-Adresse: ::1/128 (::1)
+  * eigene, mit localhost verknüpfte Adresse
+
+## Multicast
+
+* ff0==s==, s gibt den Scope an
+* ff01:: Loopback
+* ff02:: Linklocal
+* ff04:: Adminlokal (durch Admin festgelegt)
+* ff05:: Sitelokal
+* ff08:: Organisationslokal (mehrere Sites)
+* ff0e:: Global
+
+## Autokonfiguration
+
+Die 64 Bit lange IPv6 Interface ID leitet sich aus der 48 Bit MAC-Adresse ab. Diese nennt man dann Extended Unique Identifier (EUI-64)
+
+* 3 Bytes OUI
+  * Universal/Local invertiert
+* FFFE (reserviert, darf an dieser Stelle sonst nicht vorkommen)
+* 3 Bytes NIC ID
+
+Es gibt aber auch die Privacy Extensions, der Hostteil wird zufällig generiert
+
+* Endgerät erzeugt regelmässig einen zufälligen Interface Identifier
+* Endgerät prüft, ob der Identifier im Subnetz bzw. in der Broadcast Domain noch nicht existiert
+  * Neighbor Soliciation Message an Multicast Adresse FF02::1:FFFE:641D
+  * Adresse zuweisen, wenn kein Neighbor Advertisement kommt
+* Endgerät verwendet diesen zufälligen Identifier
+* Identifier hat beschränkte Geltungsdauer (z.B. Windows 7 wählt jeden Tag einen neuen Identifier und akzeptiert Pakete für diesne Identifier während 7 Tagen)
+* Endgerät kann somit über mehrere Identifiers erreicht werden
+
+
+
+## Prefix lernen
+
+1. Host sendet Router Solicitation Request (RS) an alle Router (Multicast FF02:2)
+2. Router antwortet mit Routing Advertisement (RA)
+
+## Umstellung von IPv4 auf IPv6
+
+### Dual Stack
+
+### Tunneling (6in4, 6rd, ISATAP)
+
+### Tunneling (Teredo)
+
+### Tunneling (4in6, DS-Lite)
+
+
 
 # Vorlesungswoche 10 - Transport/UDP/VoIP
 
