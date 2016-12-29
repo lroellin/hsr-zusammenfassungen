@@ -1857,7 +1857,7 @@ Es gibt aber auch die Privacy Extensions, der Hostteil wird zufällig generiert
   * Neighbor Soliciation Message an Multicast Adresse FF02::1:FFFE:641D
   * Adresse zuweisen, wenn kein Neighbor Advertisement kommt
 * Endgerät verwendet diesen zufälligen Identifier
-* Identifier hat beschränkte Geltungsdauer (z.B. Windows 7 wählt jeden Tag einen neuen Identifier und akzeptiert Pakete für diesne Identifier während 7 Tagen)
+* Identifier hat beschränkte Geltungsdauer (z.B. Windows 7 wählt jeden Tag einen neuen Identifier und akzeptiert Pakete für diesen Identifier während 7 Tagen)
 * Endgerät kann somit über mehrere Identifiers erreicht werden
 
 

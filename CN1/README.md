@@ -1,1 +1,1 @@
-Erstellt mit Typora. Das meiste sollte Standard-Markdown sein, die $$ $$-Teile sind LaTeX-Formeln.
+Erstellt mit Typora. Das meiste sollte Markdown sein, die $$ $$-Teile sind LaTeX-Formeln.
