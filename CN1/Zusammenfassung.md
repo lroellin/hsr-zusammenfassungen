@@ -280,7 +280,7 @@ Mobilfunk
 
 ### Wellenlängenmultiplexierung (WDM)
 
-* WDM
+* WDM (Wavelength Division Multiplexing)
   * Kanäle auf 850, 1300, 1500nm
 * CWDM (Coarse WDM)
   * Channel Spacing 20nm
@@ -291,15 +291,15 @@ Mobilfunk
   * Channel Spacing 40nm
   * 44-88 Kanäle
 
-| CWDM                                | DWDM                                     |
-| ----------------------------------- | ---------------------------------------- |
-| Defined by wavelengths              | Defined by frequencies                   |
-| Short-range communications          | Long-haul transmissions                  |
-| Uses wide-range frequencies         | Narrow frequencies                       |
-| Wavelengths spread far apart        | Tightly packet wavelengths               |
-| Wavelength drift is possible        | Precision lasers required to keep channels on target |
+|                CWDM                 | DWDM                                     |
+| :---------------------------------: | ---------------------------------------- |
+|       Defined by wavelengths        | Defined by frequencies                   |
+|     Short-range communications      | Long-haul transmissions                  |
+|     Uses wide-range frequencies     | Narrow frequencies                       |
+|    Wavelengths spread far apart     | Tightly packet wavelengths               |
+|    Wavelength drift is possible     | Precision lasers required to keep channels on target |
 | Breaks the spectrum into big chunks | Dies the spectrum into small pieces      |
-| Light signal isn't amplified        | Signal amplification maybe used          |
+|    Light signal isn't amplified     | Signal amplification maybe used          |
 
 ## Glasfasern
 
@@ -333,6 +333,8 @@ Eine einzelne Glasfaser kann Signale in beide Richtungen übertragen.
   * 100Gbase-LR4 für 4 optical lanes mit 25 Gbits über max. 40km SMF
 
 ## Formeln
+
+Totale Anzahl Verbindungen: *V*
 
 ### Vollvermaschung (Stern) 
 
@@ -503,20 +505,20 @@ Dämpfung Twisted Pair Kabel
 
 ## DSL
 
-* ADSL: maximale Downstream-Datenrate von 8Mb/s
+* ADSL: maximale Downstream-Datenrate von 8 Mbit/s
 * ADSL2: verbesserte Signalverarbeitung und Kodierung
-  * 12Mb/s innerhalb 0.7MHz
-* ADSL2+: Kanalbandbreite auf 2MHz erhöht
-  * 24Mb/s
+  * 12 Mbit/s innerhalb 0.7 MHz
+* ADSL2+: Kanalbandbreite auf 2 MHz erhöht
+  * 24 Mbit/s
 * VDSL1: Eine Reihe zueinander nicht kompatibler DSL-Techniken
-  * Downstream: 52Mb/s, Upstream: 11Mb/s
-  * Bereits bei 900m: 26/5.5Mb/s
+  * Downstream: 52 Mbit/s, Upstream: 11 Mbit/s
+  * Bereits bei 900m: 26/5.5 Mbit/s
   * 2000m: ADSL-Niveau
 * VDSL2: Discrete Multitone (DMT)
-  * Bandbreite: 30MHz
-  * Bis zu 100Mb/s in Up-/Downstream (theoretisch)
+  * Bandbreite: 30 MHz
+  * Bis zu 100 Mbit/s in Up-/Downstream (theoretisch)
 * VDSL2 Vectoring: Reduktion von Übersprechen durch laufende Messungen und Kompensation der Störsignale
-  * Bis zu 100Mb/s im Downstream und bis zu 40Mb/s im Upstream
+  * Bis zu 100 Mbit/s im Downstream und bis zu 40 Mbit/s im Upstream
 
 ![7C9006F9-6F18-4FDE-9950-EC0BF679F315](Zusammenfassung-Bilder/7C9006F9-6F18-4FDE-9950-EC0BF679F315.png)
 
@@ -534,13 +536,13 @@ Bidirektional
 
 ![1FBA9308-8A80-4197-81DF-C784790CE373](Zusammenfassung-Bilder/1FBA9308-8A80-4197-81DF-C784790CE373.png)
 
-* Downstream: Bereich von 50-862MHz
-  * Nutzbare Rate von 38Mb/s pro 6MHz Fernsehkanal (USA-Lösung)
-  * Europa nutzt 8MHz Kanäle und erzielt 50Mb/s
-* Senderichtung: Bereich von 5-65MHz
-  * 27Mb/s pro Kanal
+* Downstream (Empfangsrichtung): Bereich von 50-862 MHz
+  * Nutzbare Rate von 38 Mbit/s pro 6 MHz Fernsehkanal (USA-Lösung)
+  * Europa nutzt 8 MHz Kanäle und erzielt 50 Mbit/s
+* Upstream (Senderichtung): Bereich von 5-65 MHz
+  * 27 Mbit/s pro Kanal
 
-Kanalbandbreiten: USA 6MHz, EU 8MHz
+Kanalbandbreiten: USA 6 MHz, EU 8 MHz
 
 ## xDSL vs Cablenet
 
@@ -758,7 +760,7 @@ Somit bleibt der Informationsgehalt bei einem Bit pro Symbol.
 * maximale Länge eines Segments: 100m
 * Vollduplexbetrieb, Verwendung aller vier Doppeladern mit gleichzeitiger Übertragung in beide Richtungen (Echokompensation)
 * 4-dimensionales PAM-5 (Pulsamplitudenmodulation mit fünf Zuständen und Einsatz einer Trellis-Codierung und Scrambling) bei Ethernet
-  * 5^4^ = 625 mögliche Symbol. Man kann pro Schritt total 8Bit = 256 mögliche Symbole übertragen, 
+  * 5^4 = 625 mögliche Symbol. Man kann pro Schritt total 8 Bit = 256 mögliche Symbole übertragen, 
   * Man kann durch geschickte Wahl Symbole mit möglichst grossem Unterscheidungsgrad nutzen
 * NRZ bei Glasfaser
 * Schrittgeschwindigkeit 125MBaud
@@ -807,7 +809,7 @@ $$
 ![AA1C1DF7-9BA1-4DD1-AB68-8164A6E901B5](Zusammenfassung-Bilder/AA1C1DF7-9BA1-4DD1-AB68-8164A6E901B5.png)
 
 |       | Bedeutung auf Datenleitung | Bedetung auf Kontrolleitungen | Spannungs-pegel | LED bei der Break-Out-Box |
-| ----- | -------------------------- | ----------------------------- | --------------- | ------------------------- |
+| :---- | -------------------------- | ----------------------------- | --------------- | ------------------------- |
 | SPACE | Binär 0 (Logisch 0)        | Ein/Aktiv                     | +3..+15V        | rot                       |
 | MARK  | Binär 1 (Logisch 1)        | Aus/Inaktiv                   | -3..-15V        | grün                      |
 
@@ -825,7 +827,7 @@ $$
 | 15   |      | TCK       | TX Clock DCE          | Sendetakt DÜE                            | DCE    |
 | 17   |      | RCK       | RX Clock DCE          | Empfangstakt DÜE                         | DCE    |
 | 20   | 4    | DTR       | Data Terminal Ready   | Endgerät betriebsbereit: Damit  signalisiert der  Computer seine Empfangsbereitschaft und meldet  dem Modem, dass er bereit ist, Daten zu  empfangen. Mit DTE kann das Modem an- oder  ausgeschaltet werden. | DTE    |
-| 22   | 9    | RI        | Ring Indicator        | Ankommender Anruf: Mit RI zeigt  ein  WÃ¤hlmodem an, dass seine Telefaxnummer  angewÃ¤hlt wurde. | DCE    |
+| 22   | 9    | RI        | Ring Indicator        | Ankommender Anruf: Mit RI zeigt  ein  Wählmodem an, dass seine Telefaxnummer  angewählt wurde. | DCE    |
 
 Für die eigentliche Übertragung werden nur die drei Leitungen TxD, RxD und SG benötigt. Die übrigen Leitungen dienen beim sogenannten "Hardware Handshake" zur Kontrole des Datenflusses (RTS, CTS), zur Bereitschaftsanzeige (DTR, DSR), zur Übergabe von Taktsignalen (TCK, RCK) oder zur Signalisierung (RI, HS) 
 
@@ -900,7 +902,7 @@ Es gibt Geräte und Interfaces. Wenn das Gerät nur einer Klasse angehört, ist 
 
 | Klasse | Verwendung | Beschreibung                             | Beispiele                                |
 | ------ | ---------- | ---------------------------------------- | ---------------------------------------- |
-| 00h    | Gerät      | Composite Device                         | Die Klasse wird auf Ebene der *Interface-Deskriptoren*definiert |
+| 00h    | Gerät      | Composite Device                         | Die Klasse wird auf Ebene der *Interface-Deskriptoren* definiert |
 | 01h    | Interface  | Audio                                    | [Lautsprecher](https://www.wikiwand.com/de/Lautsprecher), [Mikrofon](https://www.wikiwand.com/de/Mikrofon), [Soundkarte](https://www.wikiwand.com/de/Soundkarte), [MIDI](https://www.wikiwand.com/de/Musical_Instrument_Digital_Interface) |
 | 02h    | Beides     | Kommunikation und CDC-Steuerung          | [Modem](https://www.wikiwand.com/de/Modem), [Netzwerkkarte](https://www.wikiwand.com/de/Netzwerkkarte), [Wi-Fi](https://www.wikiwand.com/de/Wi-Fi)-Adapter |
 | 03h    | Interface  | [Human Interface Device](https://www.wikiwand.com/de/Human_Interface_Device) | [Tastatur](https://www.wikiwand.com/de/Tastatur), [Maus](https://www.wikiwand.com/de/Maus_(Computer)), Joystick etc. |
@@ -953,7 +955,7 @@ USB 2.0 unterscheidet vier Haupttypen und zu jedem gibt es Untertypen.
 |           | DATA1    | 1011b     | This packet is an odd data packet        |
 |           | DATA2    | 0111b     | This packet is only used in high-speed, high-bandwidth  isochronous transfers. |
 |           | MDATA    | 1111b     | This packet is only used in split transactions, or high-speed,  high-bandwidth isochronous transfers. |
-| Handshaje | ACK      | 0010b     | This packet acknowledges the successful receipt of a data  packet. |
+| Handshake | ACK      | 0010b     | This packet acknowledges the successful receipt of a data  packet. |
 |           | NAK      | 1010b     | This packet indicates that data is not ready to be transmitted  yet. |
 |           | STALL    | 1110b     | This packet indicates that the endpoint has halted, or a  control pipe does not support a certain request. |
 |           | NYET     | 0110b     | The receiver has not yet responded, or the host should begin  sending PING packets. |
