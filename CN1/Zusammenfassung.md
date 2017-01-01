@@ -1873,17 +1873,140 @@ Es gibt aber auch die Privacy Extensions, der Hostteil wird zufällig generiert
 
 ### Dual Stack
 
+Gleichzeitige Unterstützung von IPv4 und IPv6. Dieses Verfahren sollte der Regelfall sein. 
+
 ### Tunneling (6in4, 6rd, ISATAP)
+
+IPv6 wird in IPv4 eingepackt und zu einem Tunneling-Gateway übertragen (via IPv4). Dort werden die Pakete entpackt und mit IPv6 übertragen. Es sinkt natürlich auch die Nutzlast. Dies nennt man 6in4. Die Tunnel sind unidirektional, für jede Richtung muss ein separater Tunnel aufgesetzt werden.
+
+Es können Probleme mit der MTU auftreten, aber auch NAT-/PAT-Router haben Probleme damit. 
+
+Bei 6in4 wird jede IPv4-Adresse auf ein /48 grosses IPv6 Netz abgebildet. Die entsprechende IPv6-Adresse setzt sich aus dem Präfix 2002 und der hexadezimal notierten IPv4-Adresse zusammen.
+
+Intra Site Automatic Tunnel Addressing Protocol (ISATAP) ist eine Variante von 6to4 von Cisco und Microsoft. Es wird automatisch ein Tunnel zu einem Router aus einer Potential Routers List (PRL) aufgebaut. Diese Liste ist statisch konfiguriert oder kommt über DHCP.
+
+Bei 6rd (Rapid Deployment) was bei Swisscom im Privatkundenbereich eingesetzt wird, werden 32 Bit des Netzteils für die IPv4-Adresse verwendet. Es dürfen aber auch Teile weggelassen werden, um Subnetting zu erlauben (wenn z.B. das ersten Bits immer gleich sind). 
 
 ### Tunneling (Teredo)
 
+Bei Teredo werden die IPv6 Datagrams nicht direkt in IPv4 Datagrams sondern in UDP verpackt. Es sind also insgesamt 68 Bytes Header (20 IPv4, 8 UDP, 40 IPv6). Es funktioniert auch hinter NAT/PAT-Routern korrekt. 
+
 ### Tunneling (4in6, DS-Lite)
 
+Hier wird keine Absprache mit der Gegenstelle verwendet, es werden die definierten Anycast IPv4-Adressen verwendet. 
 
+Bei Dual Stack Lite (Carrier Grade NAT) werden dem Kunden nur IPv6 Adressen bereitgestellt. Im LAN werden dann aber IPv4-Adressen benutzt (analog NAT). Statt NAT werden die IPv4-Pakete einfach in IPv6-Pakete gekapselt. Diese gehen dann zum Provider, der sie wieder entpackt und via IPv4 weiterschickt (er macht das NAT). Es sind also keine Portfreigaben möglich und es werden nicht alle Protokolle verstanden.
+
+## Nutzung (Google)
+
+![2B51A349-4A04-46E2-A5AD-A77A80A7500D](Zusammenfassung-Bilder/2B51A349-4A04-46E2-A5AD-A77A80A7500D.png)
 
 # Vorlesungswoche 10 - Transport/UDP/VoIP
 
+## Socket
+
+Endpunkte werden durch weltweit eindeutige Kombination von IP-Adresse (Netzwerk-ID) und Portnummer (Transport-ID) identifiziert. Diese Kombination wird *Socket* genannt.
+
+* UDP
+  * Empfänger nimmt Segmente anhand Destination IP-Adresse und Destination Port auseinander (2 Number Socket), bei "receive()". Bei "receive from" wird auch die Source berücksichtigt.
+  * Nur Empfangsbuffer (keine Sendbuffer)
+* TCP
+  * Empfänger nimmt Segmente anhand Source und Destination IP-Adresse und Port (4 Number Socket) auseinander
+  * Sende- und Empfangsbuffer benötigt
+
+## Ports
+
+Aufgaben
+
+* Identifikation von Prozessen
+* Unterscheidung mehrerer logischer Verbindungen zwischen gleichen Endsystemen
+
+Typen
+
+* Well known Ports (IANA): 0-1023
+* Registered/User Ports (IANA): 1024-49151
+* Reserved/Dynamic/Private Ports (IANA): 49152-65535
+
+## UDP
+
+UDP verspricht nicht, dass Daten ankommen. Es kann vorkommen, dass die Daten verdoppelt oder vertauscht werden. Die Anwendung selber muss die Korrektur- und Sicherung vornehmen. Ebenso besteht keine feste Verbindung.
+
+![F93B8A0F-CC60-42E6-A8D9-F353EC8F661E](Zusammenfassung-Bilder/F93B8A0F-CC60-42E6-A8D9-F353EC8F661E.png)
+
+* Nur 8 Byte Header
+* Source Port optional
+* Checksumme aus UDP und IP Header (frisst über den Zaun), optional
+
+UDP ist vorallem für Real-Time Anwendungen geeignet, wo alte Informationen nicht mehr benötigt werden wenn sie verloren gingen.
+
+## VoIP (RTP)
+
+RTP wird in IP und UDP verpackt. Für den Auf- und Abbau von Verbindungen wird SIP verwendet.
+
+Es muss immer ein Buffer gefüllt werden, damit der Gesprächsfluss nicht beeinträchtigt wird. UDP wird verwendet, weil nur UDP Multicast bietet. 
+
+RTP-Header: 12 Byte (mindestens)
+
+![9F12F1ED-BDBB-4205-9C17-3083341D7D49](Zusammenfassung-Bilder/9F12F1ED-BDBB-4205-9C17-3083341D7D49.png)
+
+* Version: Versionsnummer
+* Padding: ob das Frame mit Padding-Bytes aufgefüllt werden soll
+* Extension: ob eine Header-Erweiterung vorliegt
+* CSRC Count: Anzahl der Contributing Source Random Counter (CSRC) Identifier
+* Marker: markiert ein bestimmtes Profil
+* Payload Type: legt das Format des RTP-Pakets fest
+* Sequence Number: Sortierung
+* Timestamp: Absendezeit in Relation zum TCP-Strom
+* Sync Source: Zufallszahl zur Unterscheidung von verschiedenen RTP-Quellen
+* Bei gemischten RTP-Strömen können mehrere CSRC zur Identifikation der beitragenden Quelle folgen
+
+Daneben gibt es das RTP Control Protocol (RTCP) das dem Sender von RTP-Paketen Feedback zum Transportkanal gibt (z.B. Paketlaufzeiten, Jitter oder Paketverluste). RCTP werdn periodisch an alle Teilnehmer einer Session verschickt.
+
+Für RTP wird eine gerade Portnummer zwischen 16384 und 32767 gewählt, RTCP wählt die nächst höhere Nummer.
+
+## Gesprächssteuerung (SIP, H.323, SKINNY)
+
+* H.323 von ITU-T. Am weistesten verbreitet und am ältesten. Daten über UDP, Signalisierung über TCP
+* SIP von der IETF. Endgeräte sind intelligenter. Nachrichten über multicast oder Unicast. Kann auf TCP oder auf RTP/UDP aufsetzen. Kann über Gateways auch mit H.323 zusammenarbeiten
+* SKINNY (Skinny Call Control Protocol SCCP) ist proprietärer Cisco-Standard. Kann auch in Umgebungen mit H.323, MGCP und SIP eingesetzt werden.
+
+![53664B2B-8AD5-457A-BF87-5709AE1E2628](Zusammenfassung-Bilder/53664B2B-8AD5-457A-BF87-5709AE1E2628.png)
+
+Ein SIP-Telefonieserver operiert normalerweise im Proxy-Modus. Er ist also Client wie auch Server. Er dient beiden Kommunikationspartner sozusagen als Stellvertreter der Gegenstelle. Verbindungsaufbau:
+
+1. Der Proxy-Server akzeptiert die INVITE-Anfrage eines Teilnehmers A der mit Teilnehmer B telefonieren möchte
+2. Der Proxy-Server stellt zwecks Adressauflösung eine Anfrage an einen Location Service. RFC 2543 sieht hier mehrere Möglichkiten zur Verwaltung der Adressinformationen vor. Der Location Service gibt die benötigten Adressinformationen zurück
+3. Der Proxy-Server stellt nun eine INVITE-Anfrage an den (oder ggf. die) Adressaten
+4. Teilnehmer B signalisiert dem Benutzer die ankommende Anfrage "es klingelt"
+5. Teilnehmer B teilt dem Proxy Server mit, dass die Verbindung aufgebaut werden kann (SIP 200 - OK)
+6. Der Proxy-Server leitet diese Nachricht an Teilnehmer A weiter
+7. Teilnehmer A sendet eine ACK-Anfrage an den Proxy-Server
+8. Der Proxy-Server leitet diese ACK-Anfrage wiederum an Teilnehmer B weiter.
+
 # Versuch 5 - Switching/VLAN
+
+## Link Aggregation
+
+Es gibt statisches LAG und dynamisches LAG. Bei statischem LAG wird alles fix konfiguriert, bietet aber auch keine automatische Umschaltung.
+
+Bei dynamischeem LAG wird über LACP das LAG konfiguriert. Jeder Port ist entweder Active LACP oder Passive LACP. Die Informationen werden als LACPDUs (Protocol Data Units) übertragen. 
+
+* Passive LACP: der Port bevorzugt von sich aus, keine LACPDUs zu übertragen. Nur wenn die Gegenstelle Active LACP hat, überträgt der Port LACPDUs (*preference not to speak unless spoken to*)
+* Active LACP: der Port bevorzugt LACPDUs zu übertragen und somit das Protokoll zu sprechen - unabhängig davon ob die Gegenstelle Passive LACP hat oder nicht (*a preference to speak regardless*)
+
+## Spanning Tree
+
+Bei RSTP (im Gegensatz zu STP) werden bei einem Ausfall nur die Pfade neu berechnet, die über die defekte Komponente liefen. Die bisherigen Pfade bleiben bestehen und die Umschaltung erfolgt dann sehr schnell. 
+
+Ein Edge Port ist ein Port, der nicht mehr zum eigenen Switching gehört. Spanning Tree wird darauf nicht ausgeführt. Man sagt dem Switch damit, dort gibt es keine Switches.
+
+## VLANs
+
+Bei VLAN wird noch ein Tag zwischen DA/SA und Type/LEN/Data/FCS eingefügt.
+
+![E19DA347-7E4C-4A5D-805F-EC5FBF17925F](Zusammenfassung-Bilder/E19DA347-7E4C-4A5D-805F-EC5FBF17925F.png)
+
+Die Tags werden nur zwischen Switches benötigt und sollten entfernt werden, wenn die Pakete zu den Endgeräten kommen. In Wireshark werden sie meistens nicht angezeigt, da die Netzwerkkarte diese filtert.
 
 # Vorlesungswoche 11 - TCP
 
