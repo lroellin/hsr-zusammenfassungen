@@ -1557,13 +1557,13 @@ Netz-ID bzw. Broadcast-ID +1/-1
 * Im Bereich wo die Netzmaske ist 
   * Alle Netz-Bits müssen gleich sein wie Host-Adresse
 
-Beispiel: sind folgende Rechner im gleichen Netz wie 83.140.195.62/22
+Beispiel: sind folgende Rechner im gleichen Netz wie 83.140.105.62/22
 
 * 83.140.102.1
 * 83.140.104.1
 * 80.140.106.1
 
-Gezeigt werden nur die letzten zwei Bytes
+Gezeigt werden nur die letzten zwei Bytes, da die vorderen sowieso gleich sind.
 
 ```
 NM: 1111 1100 . 0000 0000
@@ -2008,7 +2008,161 @@ Die Tags werden nur zwischen Switches benötigt und sollten entfernt werden, wen
 
 # Vorlesungswoche 11 - TCP
 
+TCP bietet Reliability, Error Recovery, Flow Control und Congestion Control. Es ist verbindungsorientiert.
+
+* Socket to Socket Connection
+* Verbindungsorientiert (Session Open/Close)
+* Reliable Byte Stream (Sequence Number, Acknowledgement Number)
+* Flow Control (vom Empfänger) mittels Receive Window Size
+* ​
+* Congestion Control (vom Sender)
+
+TCP überträgt "Segments". Multicasting ist mit TCP nicht möglich.
+
+Die Zuverlässigkeit wird dadurch garantiert, dass die empfangenen Bytes mit einem Acknowledgement bestätigt und fehlende Bytes nachgefordert werden. Dazu muss man (beim Verbindungsaufbau) gewisse Abmachungen treffen (Sequenznummern, Maximum Segment Size, Window Size). 
+
+Es bracuht einen Sende-Buffer und einen Empfangs-Buffer. Der Sender behält die Segmente im Send-Buffer bis sie bestätigt wurden. Der Empfänger kann in der falschen Reihenfolge ankommende Segmente dank seinem Receive Buffer umsortieren. 
+
+![6FD62956-73F7-4A9E-A9F1-06A40838DA71](Zusammenfassung-Bilder/6FD62956-73F7-4A9E-A9F1-06A40838DA71.png)
+
+* Sequenznummer ist die Nummer des ersten Datenbytes in diesem Segment
+  * Wenn SYN gesetzt ist, ist die Sequence Number die *Initial Sequence Number* und das erste Datenbyte ist die *Initial Sequence Number* + 1.
+* Acknowledgement Number wird immer gesendet wenn die Connection aufgebaut wurde und ACK gesetzt ist
+  * Sie enthält den Wert der nächsten Sequence Number, die der Sender dieses Segments (der Empfänger des eigentlichen Datenstroms!) empfangen will
+* Data Offset: gibt an wie gross der TCP Header ist, in 32 Bit Längen. Der TCP Header ist immer Mehrfache von 32 Bits gross
+* Explicit Congestion Notification: optional für Congestion Control
+* Control Bits. Sie geben *eigentlich* an, dass die Werte in diesen Feldern zu verwerten sind, also kein Garbage drin ist
+  * U, URG: Urgent Pointer valid (kennzeichnet das Ende von prioritär zu sendenden Daten)
+  * A, ACK: Acknowledgement number valid (bestätigt den Empfang von Daten)
+  * P, PSH: Push Flag (teilt dem Empfänger mit, dass die Daten sofort an die höhere Schicht weitergereicht werden müssen)
+  * R, RST: Reset connection flag (wird bei ungültigen Paketfolgen gesendet)
+  * S, SYN: Synchronize sequence number flag (zeigt, dass eine Verbindung aufgebaut werden soll)
+  * F, FIN: End of data (steuert den Verbindungsabbau)
+* Window: gibt an wie gross die Receive Window Size ist, d.h. Anzahl Data Bytes beginnend mit dem im Acknowledge Field, die der Sender dieses Segments noch empfangen kann/will
+* Checksum: Checksumme über IP Header, TCP Header und Data
+* Urgent Pointer: zeigt auf die Sequence Number des letzten Bytes in einer Sequenz von *urgent* Daten, wenn das URG-Bit gesetzt ist
+* Options (0-44 Bytes) werden vorallem im Connection Setup verwendet. Ausgehandelt wird
+  * Nur wenn SYN gesetzt
+    * Maximum Segment Size (MSS) des Receivers
+    * Der Sender der Window Scaling Options schaltet Window Scaling in seine Senderichtung ein. Es werden dann 32 Bit statt nur 16 Bit Skalierung bei der Window Size verwendet. Kann nur im Handshake verändert werden
+    * Der Sender des Selective Acknowledgement (SACK) Permitted gibt an, dass SACK genutzt wird. Mit SACK kann der Empfänger gleich eine ganze Reihe von Paketen acknowledgen. Der Sender muss dann nur noch die Segmente schicken, die verloren gingen. Wenn zuviele Pakete seit dem letzten SACK verloren gingen wird die Option zu gross, deshalb können nur vier Blocke rapportiert werden. SACK sollte nur für die neusten empfangenen Daten genutzt werden
+  * Nur wenn ACK gesetzt
+    * Timestamp Echo Value: Gibt einen Timestamp Value zurück, der als Timestamp Value geschickt wurde
+  * In jedem Segment
+    * Timestamp Value: aktueller Timestamp (mit Timestamp Echo kann die Laufzeit gemessen werden).
+
+Ein TCP-Socket wird mit dem 4-Tupel Source IP, Source Port, Destination IP, Destination Port identizifiert. 
+
+## TCP State Transition Diagram
+
+![A3B4C6D4-7DE8-497F-BB47-482BE8630552](Zusammenfassung-Bilder/A3B4C6D4-7DE8-497F-BB47-482BE8630552.png)
+
+## 3-Way Handshake
+
+Der Empfänger macht einen Socket "Passive Open" auf, der Sender "Active Open"
+
+![F4F9DE11-D4A8-4821-9717-5802DC7A5C2F](Zusammenfassung-Bilder/F4F9DE11-D4A8-4821-9717-5802DC7A5C2F.png)
+
+Acknowledgements: Sequence Number des Gegenübers bestätigen
+
+Wie man sieht, acknowledget der Server x+1 und der Client antwortet sogleich mit SN x+1.
+
+* Die Receice Window Size gibt an, wieviel der Empfänger (Sender dieser Option) maximal unbestätigt empfangen will. Wird manchmal auch nur Window Size genannt. Die Window Size gibt auch an, wie gross der Receive Buffer noch ist
+* Die Maximum Segment Size (MSS) gibt an, wieviel Daten der Empfänger empfangen will. Gibt implizit an, wieviel Daten der Sender dieser Information in ein IP-Paket auf seiner Seite packen kann, ohne Fragmentierung auf dem Network Layer. Kann auch das Resultat eines MTU Path Discovery sein
+* Die Sequence Number gibt die (virtuelle) Byte Stream-Nummer des ersten Bytes dieses Segments an.
+
+### State Diagram Verbindungsaufbau
+
+![3F187D63-922C-432F-B1D3-6FC6C9352F6F](Zusammenfassung-Bilder/3F187D63-922C-432F-B1D3-6FC6C9352F6F.png)
+
+Wenn ein SYN-Paket gesendet wird, startet der Absender einen Timer und einen Counter. Das Paket wird neu gesendet, wenn der Timer abgelaufen ist, der Counter wird dann erhöht (steht nach erstem SYN auf 0). 
+
+Windows Telnet macht 3 Versuche (2 Resends) maximal. Der erste Resend nach 3, dann 6, dann 12 Sekunden. Eine unmögliche Verbindung dauert also 21 Sekunden bis zum endgültigen Abbruch.
+
+## Verbindungsabbau
+
+Der Verbindungsabbau erfolgt, wenn das FIN Bit gesetzt ist. Es müssen immer beide Streams geschlossen werden!
+
+![8F872FBB-AA92-476C-B7B1-448497E0EDC9](Zusammenfassung-Bilder/8F872FBB-AA92-476C-B7B1-448497E0EDC9.png)
+
+## State Diagram
+
+![37BFA88F-3A53-451A-BB5F-E8AFB7A7D1DC](Zusammenfassung-Bilder/37BFA88F-3A53-451A-BB5F-E8AFB7A7D1DC.png)
+
+MSL steht für *Maximum Segment Lifetime* und ist auf 2 Minuten definiert. Soll angeben, wie lange ein Segment im Internet existieren kann.
+
+Wenn das zweite FIN acknowledged wurde, wartet der Client noch 2*MSL lange, bis er die Verbindung schliesslich ganz abbaut. Dieser Zustand nennt sich TIME_WAIT. In diesem Zustand kann die Verbindung mit viel kleineren Kosten wieder geöffnet werden. Applikationen können den MSL selber setzen. 
+
+In IPv4 muss mindestens eine MSS von 576 Bytes, in IPv6 eine von 1220 Bytes unterstützt werden. Es gibt Router, die während dem Verbindungsaufbau an der MSS rumschrauben, auch wenn sie das nach OSI nicht sollten. Falls die MSS nicht gesetzt wurde, werden die Mindestwerte angenommen.
+
+## Reliable Byte Stream
+
+Jedem Byte wird eine virtuelle Sequenznummer (SEQ) zugeordnet
+
+* Der Empfänger kann anhand der Sequenznummern die empfangenen Segmente in der richtigen Reihenfolge an die höheren Schichten weitergeben
+* Der Empfänger bestätigt den erfolgreichen Empfang, indem er dem Sender mit der Acknowledgement Nummer meldet, welches Byte er als nächstes erwartet. Falls der Sender innerhalb eines Timeouts (Retransmission Timeout, RTO) keine positive Bestätigung für abgeschickte Segmente erhält, sendet er das Segment nochmals.
+
+Die ISN wird beim Verbindungsaufbau mitgeteilt, sie muss nicht mit 0 beginnen. Je nach Betriebssystem wird die ISN pseudozufällig gewählt. TCP entspricht dem *Stop-and-Wait* Protokoll, bei dem jedes Segment bestätigt werden muss, wenn die Window Size nur gleich einem Segment ist.
+
+Wenn das ACK eine bestimmte Sequenznummer verlangt, werden alle vorherigen Sequenznummern implizit bestätigt.
+
+![F73D6CA5-D893-4C24-945F-1CB14C85AA44](Zusammenfassung-Bilder/F73D6CA5-D893-4C24-945F-1CB14C85AA44.png)
+
+### Lost Packet (ein Paket kommt nicht an)
+
+Das Paket wird nach dem RTO neu gesendet. Dieser sollte natürlich länger als die RTT sein. Wenn sie aber zu gross ist, dauert die Reaktion auf einen Verlust zu lange. Die initiale RTO ist typischerweise 3000ms, neuerdings 1000ms.
+
+### Lost ACK
+
+Wenn das ACK verloren ging, denkt der Sender dass es nicht empfangen wurde. Der Empfänger erhält dann die Daten zweimal, merkt aber anhand der Sequence Number dass dies ein Retransmit ist. Er versendet dann das ACK einfach nochmal, als wäre nichts geschehen. 
+
+## RTT und RTO Berechnung
+
+Die RTT wird folgend errechnet
+
+* SampleRTT für jedes Ack
+* Estimated RTT (Smoothed RTT)
+* DevRTT (RTT Variation) gibt an, wie gross die SampleRTT von der EstimatedRTT abweicht.
+* Oder basierend auf Timestamps in den TCP Options
+
+Die RTO wird folgend berechnet
+
+* Initial auf 1000ms
+* Dann: RTO = EstimatedRTT + 4 * DevRTT
+
+Ein TCP-Host muss Karn's Algorithm und Jacobson's Algorithm für die RTO-Berechnung implementieren. Jacobson's Algorithmus für die Smoothed RTO beinhaltet eine einfache Messung der Varianz, Karn's Algorithmus für die RTT Messungen stellt sicher, dass eine einzelne Messung nicht die Smoothed RTT kaputtmacht.
+
+## ACK Generation
+
+Delayed ACK: ACK nur zurücksenden wenn
+
+* Kein Acknowledgement fürs vorherige Segment empfangen wurde
+* Ein Segment wurde empfangen, aber kein weiteres innerhalb des delayed_ack_timer
+
+Wenn ein ACK verloren ging, aber ein anderes ACK innerhalb des RTO empfangen wurde, werden die Daten nicht neu versendet. 
+
+Falls der Sender zu forsch ist und einfach weiter sendet, sendet der Empfänger nochmal das ACK für das Paket welches er tatsächlich benötigt, sozusagen mit Nachdruck. Dies nennt man dann Dup-ACKs (Duplicate Acknowledgement). Dies dauert allerdings 2 Dup Acks (insg. 4 ACKs für ein bestimmtes Paket). Weil der Retransmission Timer nicht abgewartet wird, spricht man von Fast Retransmit.
+
+### Selective ACK (SACK)
+
+Mit SACK kann der Empfänger angeben, dass ein Paket noch nicht erhalten wurde (z.B. 21), aber spätere Pakete trotzdem schon erhalten wurden (z.B. 31-40). 
+
+* ACK: 21
+* SACK: Begin 31, End 41
+
+## Receive Window Size
+
+Aufgaben beim TCP Empfänger-Buffer (Receive Buffer)
+
+* Zwischenspeicherung der Segmente vor der Weitergabe an die Anwendung
+* Sortierung von Segmenten
+* Grösse wird dem Sender laufend mitgeteilt
+
+Die Segmente werden an die Anwendung weitergegeben, wenn der Buffer voll ist oder der Sender das Push-Flag gesetzt hat. 
+
 # Vorlesungswoche 12 - FTP
+
+
 
 # Versuch 6 - WLAN
 
