@@ -2,7 +2,7 @@
 typora-copy-images-to: ./Zusammenfassung-Bilder
 ---
 
-[TOC]
+## 
 
 # Vorlesungswoche 1 - Grundbegriffe
 
@@ -2134,6 +2134,8 @@ Ein TCP-Host muss Karn's Algorithm und Jacobson's Algorithm für die RTO-Berechn
 
 ## ACK Generation
 
+![C1789A1B-84A2-4A86-BC13-5BA121533E76](Zusammenfassung-Bilder/C1789A1B-84A2-4A86-BC13-5BA121533E76.png)
+
 Delayed ACK: ACK nur zurücksenden wenn
 
 * Kein Acknowledgement fürs vorherige Segment empfangen wurde
@@ -2150,6 +2152,10 @@ Mit SACK kann der Empfänger angeben, dass ein Paket noch nicht erhalten wurde (
 * ACK: 21
 * SACK: Begin 31, End 41
 
+### Cumulative Ack
+
+TCP macht standardmässig ein Cumulative ACK, d.h. dass der Empfänger einen Timeout abwartet ob noch weitere Pakete kommen, bevor er ein Paket bestätigt. 
+
 ## Receive Window Size
 
 Aufgaben beim TCP Empfänger-Buffer (Receive Buffer)
@@ -2160,13 +2166,221 @@ Aufgaben beim TCP Empfänger-Buffer (Receive Buffer)
 
 Die Segmente werden an die Anwendung weitergegeben, wenn der Buffer voll ist oder der Sender das Push-Flag gesetzt hat. 
 
-# Vorlesungswoche 12 - FTP
+## Maximale Datenrate: Time Bandwidth Product
 
+Receive Window Size / RTT
 
+## TCP Window Scale Option
+
+Das Window Scaling wird beim Handshake ausgehandelt. Mit Receive Window Auto-Tuning kann das auch während der Verbindung geschehen.
+
+## TCP Flow Control Sender
+
+Wenn ein Stau besteht, dann soll nicht ein noch grösserer Stau verursacht werden.
+
+Congestion Control wird vom Sender gemacht. Er startet mit einem Slow Start und wird dann immer schneller, bis Pakete verloren gingen. 
+
+Es gibt zwei Grössen, die Slow Start Threshold Size (sstresh) und das Congestion Window (cwnd)
+
+### Slow Start
+
+TCP ist entweder im Slow Start oder im Congestion Avoidance Zustand. Er startet im Slow Start und wenn die Slow Start Threshold Size überschritten wird, wird der Congestion Avoidance angewendet.
+
+Der Sender schickt 1 Segment und wartet aufs ACK. Danach schickt er 2, 4, 16 usw. Segmente bis keine ACKs mehr kommen. Wenn Delayed Acks verwendet werden, geht der Slow Start nicht so schnell hoch.
+
+## Congestion Window
+
+Das Congestion Window gibt an, wieviele Bytes "in flight" sein dürfen. Dies in Anzahl MSS. 
+
+Man schickt ein Paket und wartet dessen ACK ab. Dann schickt man nacheinander 2 Pakete ab (direkt hintereinander) und wartet die ACKs dieser Pakete ab. Dies, in der Theorie, exponentiell bis man die ACKs nicht mehr alle erhält.
+
+## Algorithmen
+
+![4D3FEDA6-65ED-411B-8A20-D0CD62CED6B6](Zusammenfassung-Bilder/4D3FEDA6-65ED-411B-8A20-D0CD62CED6B6.png)
+
+Solange non-duplicate ACKS ankommen, wird das Congestion Window um eine MSS pro RTT erhöht. Bei einem Timeout reduzieren die beiden Algorithmen das cwnd um 1 MSS pro Timeout. 
+
+## TCP Speed Adoption (Ack Clocking)
+
+Ankommende Pakete werden so langsam ausgesendet, dass sich eine vorgegebene Download-Datenrate ergibt. TCP stellt sich also immer auf den langsamsten Link im Pfad ein.
+
+## TCPTrace
+
+![5442BEFA-0AB1-4886-A360-593B3CCD47B4](Zusammenfassung-Bilder/5442BEFA-0AB1-4886-A360-593B3CCD47B4.png)
+
+## Silly Window
+
+Wenn das Rwin kleiner als die MSS ist, gibt es einigen Overhead	
+
+## Explicit Congestion Notification
+
+Wenn ein Router das unterstützt, kann er auch in den IP-Headern ein ECN-Flag setzen und mitteilen, dass sich eine Congestion entwickelt.
+
+# Vorlesungswoche 12 - Applikationen/FTP/TFTP/NVT
+
+Anforderungen von Applikationen
+
+* Bandwidth (Data Throughput, Speed)
+  * manche brauchen minimale Bandbreite (z.B. Multimedia)
+  * andere verwenden die Bandbreite die sie kriegen
+* Delay (Timing, Responsiveness)
+  * manche brauchen möglichst wenig Verzögerung (z.B. Telefon)
+* Data Loss
+  * manche ertragen ein bisschen Verlust, andere überhaupt nicht
+* Delay Differences (Timing Differences, Jitter)
+  * Voice braucht möglichst wenig Varianz in den Ankunftszeiten
+* Security
+
+## Paradigmen
+
+### Client-Server
+
+Client initiiert Verbindung, verlangt Dienst vom Server. Viele Clients nutzen einen Server. Server immer unter derselben Adresse erreichbar
+
+### Peer-to-Peer
+
+Beliebige Paare von Hosts kommunizieren miteinander, diese können die Adresse auch ändern.
+
+Bei einem Filesharing-Service gibt es Supernodes, die wissen welches File auf welchen Rechnern liegt. 
+
+## Network Virtual Terminal (NVT)
+
+Ein NVT ist ein Programm/Gerät, das ein Terminal emuliert. Wichtig ist hierbei noch der TCP Nagle-Algorithmus, der versucht mehrere Zeichen zu sammeln bevor ein Paket geschickt wird.
+
+## TFTP
+
+* Zugriff auf Remote File Systeme (ohne Login)
+* Diskless Systeme booten und Applikationen laden
+* UDP 69
+
+1. Client schickt Read Request (RRQ) an Port 69
+2. Server antwortet mit Paketen bis zu 512 Byte Länge (zwischen zwei neuen Ports) mit Paket 1
+3. Client schickt Acknowledgement für Paket 1
+4. Server schickt Paket 2
+5. ...
+6. Wenn der Client ein Paket mit weniger als 512 Byte Daten schickt, nimmt er an dass die Übertragung fertig ist
+
+![DECC38F2-F3D6-433F-93B1-5DB530DF07B0](Zusammenfassung-Bilder/DECC38F2-F3D6-433F-93B1-5DB530DF07B0.png)
+
+Mode
+
+* NetASCII: 7 Bit ASCII 
+* Octet: 8 Bit binary
+* Mail: obsolete
+
+## FTP
+
+Basiert auf TCP. 
+
+Benutzt zwei Verbindungen
+
+* Kommando: Server Port 21
+* Data Transfer
+  * Active Mode: der Server verbindet (aktiv) zu einem Port, den der Client vorgibt (Server Source Port 20)
+  * Passive Mode: der Server macht ein passive open um eine TCP-Verbidnung anzunehmen, die der Client initiiert (wird dem Client mitgeteilt)
+
+Transfer standardmässig in ASCII, Binary (Image), EBCDIC oder Local File Format (Type)
+
+### Befehle
+
+* HELP
+  * shows list of commands
+* SYST
+  * Server returns system type
+* USER(username)
+  * define username on this server
+* PASS(password)
+  * define password on this server
+* PORT(i1, i2, i3, i4, pA, pB)
+  * Client IP address (i1.i2.i3.i4) und Port (pA*256 + pB)
+* LIST(filelist)
+  * list files or directories
+* RETR(filename)
+  * retrieve (get) file with the given filename
+* PASV
+  * enter passive mode
+* STOR(filename)
+  * store (put) file with the given filename
+* ABOR
+  * abort previous FTP command and any data transfer
+* QUIT
+  * logoff from server
+
+FTP Connection Process
+
+1. Login
+2. Define Directory
+3. Define File Transfer Mode
+4. Start Data Transfer
+5. Stop Data Transfer
+
+Beim ASCII-Mode wird zwischen Unix und DOS unterschieden und die Line Endings angepasst
+
+### FTP und NAT
+
+Der Server muss seine externe Adresse angeben
 
 # Versuch 6 - WLAN
 
 # Vorlesungswoche 13 - DNS/Whois/CDN
+
+## DNS
+
+### TLD
+
+* Generic
+  * edu, gov, mil, int, com, net, ...
+* Country Code
+  * au, ch, ca, de, us
+* nTLD
+  * biz, name, pro, aero, asia, cat
+
+## Begriffe
+
+* RIR: Regional Internet Registrar, RIPE
+* LIR: Local Internet Registrar, Switch
+
+## Name Server Typen
+
+* Primary Server
+  * maintains all the data corresponding to its domain
+  * knows the servers that are the authorative name servers for the root domain of the network
+  * contains writeable authoritative copy for the zones that it is primary for
+  * loads its data from a file on disk
+  * may delegate authority to other servers in its domain
+* Secondary server
+  * contains mirror copy of the data from the primary name server providing redundancy
+  * is delegated authority
+  * receives its data from the primary master server
+  * periodically checks with the primary server to see if it needs to update its data
+* Caching server
+  * relies on other name servers (non-authorative servers for any domain)
+  * queries and asks other servers who have the authority
+  * keeps data in its cache until the data expires
+  * based on a time to live (TTL) field attached to the data when it is received
+
+## DNS Resource Records
+
+* SOA: Start of a zone of authority record
+  * Specifies authrotative information about a DNS zone, including the primary name server, the email of the domain administrator, the domain serial number and several timers relating to refreshing the zone
+* A: IPv4 record
+* AAAA: IPv6 record
+* CNAME: canonical name (kann als Alias verwendet werden)
+* LOC: Location record
+* MX: Mail exchange
+* NS: name server record
+
+Class: Protocol Family (IN = Internet)
+
+## DNS Protocol: Messages
+
+![A03A0463-9E97-4014-9E9A-DCD18CA7E02E](Zusammenfassung-Bilder/A03A0463-9E97-4014-9E9A-DCD18CA7E02E.png)
+
+Queries über UDP/53, Domain Zone Transfer über TCP/53
+
+## Zips Law
+
+Das zweithäufigste Video wird nur halb so viel wie das häufigste aufgerufen, das dritthäufigste Video nur halb so viel wie das zweithäufigste, ...
 
 # Vorlesungswoche 14 - HTTP
 
