@@ -4,11 +4,15 @@
 
 [![Quicksort: Partitioning an array](http://img.youtube.com/vi/MZaf_9IZCrc/0.jpg)](http://www.youtube.com/watch?v=MZaf_9IZCrc "Quicksort: Partitioning an array")
 
+Visual: https://visualgo.net/sorting
+
 # Mergesort
 
 **Merge Sort**
 
 [![Merge Sort](http://img.youtube.com/vi/EeQ8pwjQxTM/0.jpg)](http://www.youtube.com/watch?v=EeQ8pwjQxTM "Merge Sort")
+
+Visual: https://visualgo.net/sorting
 
 # Knapsack
 
