@@ -1,4 +1,5 @@
-# Quicksort
+# Sort
+## Quicksort
 
 **Quicksort: Partitioning an array**
 
@@ -6,7 +7,7 @@
 
 Visual: https://visualgo.net/sorting
 
-# Mergesort
+## Mergesort
 
 **Merge Sort**
 
@@ -14,33 +15,36 @@ Visual: https://visualgo.net/sorting
 
 Visual: https://visualgo.net/sorting
 
+# String Search
 # KMP
 
 **Knuth–Morris–Pratt(KMP) Pattern Matching(Substring search)**
 
 [![Knuth–Morris–Pratt(KMP) Pattern Matching(Substring search)](https://i.ytimg.com/vi/GTJr8OvyEVQ/hqdefault.jpg)](https://www.youtube.com/watch?v=GTJr8OvyEVQ "Knuth–Morris–Pratt(KMP) Pattern Matching(Substring search)")
 
-
-# Knapsack
+# Dynamic Programming
+## Knapsack
 
 **0/1 Knapsack Problem Dynamic Programming**
 
 [![0/1 Knapsack Problem Dynamic Programming](http://img.youtube.com/vi/8LusJS5-AGo/0.jpg)](http://www.youtube.com/watch?v=8LusJS5-AGoE "0/1 Knapsack Problem Dynamic Programming")
 
-# Floyd-Warshall
+# Graphen
+## Floyd-Warshall
+Transitver Abschluss. Wenn es einen Weg von A zu B und von B zu D gibt, gibt es auch einen von A zu D
 
 **Floyd–Warshall algorithm in 4 minutes**
 
 [![Floyd–Warshall algorithm in 4 minutes](http://img.youtube.com/vi/4OQeCuLYj-4/0.jpg)](http://www.youtube.com/watch?v=4OQeCuLYj-4 "Floyd–Warshall algorithm in 4 minutes")
 
-# Dijkstra's algorithm
+## Dijkstra's algorithm
 Shortest Path without negative edges
 
 **Dijkstra's algorithm in 3 minutes — Review and example**
 
 [![Dijkstra's algorithm in 3 minutes — Review and example](https://i.ytimg.com/vi/_lHSawdgXpI/hqdefault.jpg)](https://www.youtube.com/watch?v=_lHSawdgXpI "Dijkstra's algorithm in 3 minutes — Review and example")
 
-# Bellman-Ford 
+## Bellman-Ford 
 Shortests Path with negative edges
 
 **Bellman-Ford in 5 minutes — Step by step example**
