@@ -26,6 +26,13 @@ Visual: https://visualgo.net/sorting
 
 [![Floyd–Warshall algorithm in 4 minutes](http://img.youtube.com/vi/4OQeCuLYj-4/0.jpg)](http://www.youtube.com/watch?v=4OQeCuLYj-4 "Floyd–Warshall algorithm in 4 minutes")
 
+# Dijkstra's algorithm
+Shortest Path without negative edges
+
+**Dijkstra's algorithm in 3 minutes — Review and example**
+
+[![Dijkstra's algorithm in 3 minutes — Review and example](https://i.ytimg.com/vi/_lHSawdgXpI/hqdefault.jpg)](https://www.youtube.com/watch?v=_lHSawdgXpI "Dijkstra's algorithm in 3 minutes — Review and example")
+
 # Bellman-Ford 
 Shortests Path with negative edges
 
