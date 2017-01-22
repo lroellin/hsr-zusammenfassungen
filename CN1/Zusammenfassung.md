@@ -280,7 +280,7 @@ Mobilfunk
 
 ### Wellenlängenmultiplexierung (WDM)
 
-* WDM
+* WDM (Wavelength Division Multiplexing)
   * Kanäle auf 850, 1300, 1500nm
 * CWDM (Coarse WDM)
   * Channel Spacing 20nm
@@ -291,15 +291,15 @@ Mobilfunk
   * Channel Spacing 40nm
   * 44-88 Kanäle
 
-| CWDM                                | DWDM                                     |
-| ----------------------------------- | ---------------------------------------- |
-| Defined by wavelengths              | Defined by frequencies                   |
-| Short-range communications          | Long-haul transmissions                  |
-| Uses wide-range frequencies         | Narrow frequencies                       |
-| Wavelengths spread far apart        | Tightly packet wavelengths               |
-| Wavelength drift is possible        | Precision lasers required to keep channels on target |
+|                CWDM                 | DWDM                                     |
+| :---------------------------------: | ---------------------------------------- |
+|       Defined by wavelengths        | Defined by frequencies                   |
+|     Short-range communications      | Long-haul transmissions                  |
+|     Uses wide-range frequencies     | Narrow frequencies                       |
+|    Wavelengths spread far apart     | Tightly packet wavelengths               |
+|    Wavelength drift is possible     | Precision lasers required to keep channels on target |
 | Breaks the spectrum into big chunks | Dies the spectrum into small pieces      |
-| Light signal isn't amplified        | Signal amplification maybe used          |
+|    Light signal isn't amplified     | Signal amplification maybe used          |
 
 ## Glasfasern
 
@@ -333,6 +333,8 @@ Eine einzelne Glasfaser kann Signale in beide Richtungen übertragen.
   * 100Gbase-LR4 für 4 optical lanes mit 25 Gbits über max. 40km SMF
 
 ## Formeln
+
+Totale Anzahl Verbindungen: *V*
 
 ### Vollvermaschung (Stern) 
 
@@ -503,20 +505,20 @@ Dämpfung Twisted Pair Kabel
 
 ## DSL
 
-* ADSL: maximale Downstream-Datenrate von 8Mb/s
+* ADSL: maximale Downstream-Datenrate von 8 Mbit/s
 * ADSL2: verbesserte Signalverarbeitung und Kodierung
-  * 12Mb/s innerhalb 0.7MHz
-* ADSL2+: Kanalbandbreite auf 2MHz erhöht
-  * 24Mb/s
+  * 12 Mbit/s innerhalb 0.7 MHz
+* ADSL2+: Kanalbandbreite auf 2 MHz erhöht
+  * 24 Mbit/s
 * VDSL1: Eine Reihe zueinander nicht kompatibler DSL-Techniken
-  * Downstream: 52Mb/s, Upstream: 11Mb/s
-  * Bereits bei 900m: 26/5.5Mb/s
+  * Downstream: 52 Mbit/s, Upstream: 11 Mbit/s
+  * Bereits bei 900m: 26/5.5 Mbit/s
   * 2000m: ADSL-Niveau
 * VDSL2: Discrete Multitone (DMT)
-  * Bandbreite: 30MHz
-  * Bis zu 100Mb/s in Up-/Downstream (theoretisch)
+  * Bandbreite: 30 MHz
+  * Bis zu 100 Mbit/s in Up-/Downstream (theoretisch)
 * VDSL2 Vectoring: Reduktion von Übersprechen durch laufende Messungen und Kompensation der Störsignale
-  * Bis zu 100Mb/s im Downstream und bis zu 40Mb/s im Upstream
+  * Bis zu 100 Mbit/s im Downstream und bis zu 40 Mbit/s im Upstream
 
 ![7C9006F9-6F18-4FDE-9950-EC0BF679F315](Zusammenfassung-Bilder/7C9006F9-6F18-4FDE-9950-EC0BF679F315.png)
 
@@ -534,13 +536,13 @@ Bidirektional
 
 ![1FBA9308-8A80-4197-81DF-C784790CE373](Zusammenfassung-Bilder/1FBA9308-8A80-4197-81DF-C784790CE373.png)
 
-* Downstream: Bereich von 50-862MHz
-  * Nutzbare Rate von 38Mb/s pro 6MHz Fernsehkanal (USA-Lösung)
-  * Europa nutzt 8MHz Kanäle und erzielt 50Mb/s
-* Senderichtung: Bereich von 5-65MHz
-  * 27Mb/s pro Kanal
+* Downstream (Empfangsrichtung): Bereich von 50-862 MHz
+  * Nutzbare Rate von 38 Mbit/s pro 6 MHz Fernsehkanal (USA-Lösung)
+  * Europa nutzt 8 MHz Kanäle und erzielt 50 Mbit/s
+* Upstream (Senderichtung): Bereich von 5-65 MHz
+  * 27 Mbit/s pro Kanal
 
-Kanalbandbreiten: USA 6MHz, EU 8MHz
+Kanalbandbreiten: USA 6 MHz, EU 8 MHz
 
 ## xDSL vs Cablenet
 
@@ -758,7 +760,7 @@ Somit bleibt der Informationsgehalt bei einem Bit pro Symbol.
 * maximale Länge eines Segments: 100m
 * Vollduplexbetrieb, Verwendung aller vier Doppeladern mit gleichzeitiger Übertragung in beide Richtungen (Echokompensation)
 * 4-dimensionales PAM-5 (Pulsamplitudenmodulation mit fünf Zuständen und Einsatz einer Trellis-Codierung und Scrambling) bei Ethernet
-  * 5^4^ = 625 mögliche Symbol. Man kann pro Schritt total 8Bit = 256 mögliche Symbole übertragen, 
+  * 5^4 = 625 mögliche Symbol. Man kann pro Schritt total 8 Bit = 256 mögliche Symbole übertragen, 
   * Man kann durch geschickte Wahl Symbole mit möglichst grossem Unterscheidungsgrad nutzen
 * NRZ bei Glasfaser
 * Schrittgeschwindigkeit 125MBaud
@@ -807,7 +809,7 @@ $$
 ![AA1C1DF7-9BA1-4DD1-AB68-8164A6E901B5](Zusammenfassung-Bilder/AA1C1DF7-9BA1-4DD1-AB68-8164A6E901B5.png)
 
 |       | Bedeutung auf Datenleitung | Bedetung auf Kontrolleitungen | Spannungs-pegel | LED bei der Break-Out-Box |
-| ----- | -------------------------- | ----------------------------- | --------------- | ------------------------- |
+| :---- | -------------------------- | ----------------------------- | --------------- | ------------------------- |
 | SPACE | Binär 0 (Logisch 0)        | Ein/Aktiv                     | +3..+15V        | rot                       |
 | MARK  | Binär 1 (Logisch 1)        | Aus/Inaktiv                   | -3..-15V        | grün                      |
 
@@ -825,7 +827,7 @@ $$
 | 15   |      | TCK       | TX Clock DCE          | Sendetakt DÜE                            | DCE    |
 | 17   |      | RCK       | RX Clock DCE          | Empfangstakt DÜE                         | DCE    |
 | 20   | 4    | DTR       | Data Terminal Ready   | Endgerät betriebsbereit: Damit  signalisiert der  Computer seine Empfangsbereitschaft und meldet  dem Modem, dass er bereit ist, Daten zu  empfangen. Mit DTE kann das Modem an- oder  ausgeschaltet werden. | DTE    |
-| 22   | 9    | RI        | Ring Indicator        | Ankommender Anruf: Mit RI zeigt  ein  WÃ¤hlmodem an, dass seine Telefaxnummer  angewÃ¤hlt wurde. | DCE    |
+| 22   | 9    | RI        | Ring Indicator        | Ankommender Anruf: Mit RI zeigt  ein  Wählmodem an, dass seine Telefaxnummer  angewählt wurde. | DCE    |
 
 Für die eigentliche Übertragung werden nur die drei Leitungen TxD, RxD und SG benötigt. Die übrigen Leitungen dienen beim sogenannten "Hardware Handshake" zur Kontrole des Datenflusses (RTS, CTS), zur Bereitschaftsanzeige (DTR, DSR), zur Übergabe von Taktsignalen (TCK, RCK) oder zur Signalisierung (RI, HS) 
 
@@ -900,7 +902,7 @@ Es gibt Geräte und Interfaces. Wenn das Gerät nur einer Klasse angehört, ist 
 
 | Klasse | Verwendung | Beschreibung                             | Beispiele                                |
 | ------ | ---------- | ---------------------------------------- | ---------------------------------------- |
-| 00h    | Gerät      | Composite Device                         | Die Klasse wird auf Ebene der *Interface-Deskriptoren*definiert |
+| 00h    | Gerät      | Composite Device                         | Die Klasse wird auf Ebene der *Interface-Deskriptoren* definiert |
 | 01h    | Interface  | Audio                                    | [Lautsprecher](https://www.wikiwand.com/de/Lautsprecher), [Mikrofon](https://www.wikiwand.com/de/Mikrofon), [Soundkarte](https://www.wikiwand.com/de/Soundkarte), [MIDI](https://www.wikiwand.com/de/Musical_Instrument_Digital_Interface) |
 | 02h    | Beides     | Kommunikation und CDC-Steuerung          | [Modem](https://www.wikiwand.com/de/Modem), [Netzwerkkarte](https://www.wikiwand.com/de/Netzwerkkarte), [Wi-Fi](https://www.wikiwand.com/de/Wi-Fi)-Adapter |
 | 03h    | Interface  | [Human Interface Device](https://www.wikiwand.com/de/Human_Interface_Device) | [Tastatur](https://www.wikiwand.com/de/Tastatur), [Maus](https://www.wikiwand.com/de/Maus_(Computer)), Joystick etc. |
@@ -953,7 +955,7 @@ USB 2.0 unterscheidet vier Haupttypen und zu jedem gibt es Untertypen.
 |           | DATA1    | 1011b     | This packet is an odd data packet        |
 |           | DATA2    | 0111b     | This packet is only used in high-speed, high-bandwidth  isochronous transfers. |
 |           | MDATA    | 1111b     | This packet is only used in split transactions, or high-speed,  high-bandwidth isochronous transfers. |
-| Handshaje | ACK      | 0010b     | This packet acknowledges the successful receipt of a data  packet. |
+| Handshake | ACK      | 0010b     | This packet acknowledges the successful receipt of a data  packet. |
 |           | NAK      | 1010b     | This packet indicates that data is not ready to be transmitted  yet. |
 |           | STALL    | 1110b     | This packet indicates that the endpoint has halted, or a  control pipe does not support a certain request. |
 |           | NYET     | 0110b     | The receiver has not yet responded, or the host should begin  sending PING packets. |
@@ -1068,7 +1070,7 @@ Für STP braucht jeder Switch eine MAC-Adresse. Es werden Hello-Pakete mit Multi
 Parameter:
 
 * Bridge Identifier (ID)
-  * Kombination von 3B Priority Number und 6B MAC Adresse
+  * Kombination von 3 Bit Priority Number und 6 Bit MAC Adresse
   * Priority Number ist konfigurierbar (Default 32768)
 * Port Number (P)
   * Ports eines Switches haben unterschiedliche Portnummern
@@ -1083,12 +1085,12 @@ Standard-Kosten
 ### Algorithmus
 
 1. Einschalten aller Bridges
-2. Jede Bridge nimmt an, sie sei die Root-Bridge
-3. Jede Bridge sendet BDPU aus
-4. Die Bridge mit der kleinsten Bridge-ID (Priority & MAC-Adresse) wird zur Root-Bridge (untereinander)
-5. Die Root-Bridge sendet Konfigurations-BDPUs aus. Diese werden von den Nachbar-Bridges empfangen und interpretiert. Die Empfänger der BDPU senden selbst BDPU an die Nachbarbridges, wobei angegeben wird über wieviele Hops/Pfadkosten die BDPU empfangen wurde. Die Pfadkosten der einzelnen Hops werden aufaddiert (Distanz zur Root)
-6. Jede Bridge bestimmt den Port mit den kleinsten Pfadkosten zur Root-Bridge als Root-Port. Bei Ports mit gleichen Kosten gewinnt die kleinere Port-ID
-7. Verbindungen zwischen nicht Root Ports werden deaktiviert
+2. Jede Bridge nimmt an, sie sei die Root-Bridge.
+3. Jede Bridge sendet BDPU aus.
+4. Die Bridge mit der kleinsten Bridge-ID (Priority & MAC-Adresse) wird zur Root-Bridge (untereinander).
+5. Die Root-Bridge sendet Konfigurations-BDPUs aus. Diese werden von den Nachbar-Bridges empfangen und interpretiert. Die Empfänger der BDPU senden selbst BDPU an die Nachbarbridges, wobei angegeben wird über wieviele Hops/Pfadkosten die BDPU empfangen wurde. Die Pfadkosten der einzelnen Hops werden aufaddiert (=> Distanz zur Root).
+6. Jede Bridge bestimmt den Port mit den kleinsten Pfadkosten zur Root-Bridge als Root-Port. Bei Ports mit gleichen Kosten gewinnt die kleinere Port-ID.
+7. Verbindungen zwischen nicht Root Ports werden deaktiviert:
    1. Der Port mit den niedrigsten Pfadkosten zur Root wird zum Designated Port und leitet weiterhin Frames auf den Link
    2. Der Port mit den höheren Pfadkosten zur Root wird zum Blocked Port (sende keine Frames mehr, ==empfängt== aber noch)
    3. Solange ein Switch auf den Blocked Ports BDPU empfängt, bleibt der Port im Blocking Status
@@ -1365,7 +1367,7 @@ Bei WLAN kann man nicht gleichzeitig senden und mithören. Nach jedem Freiwerden
   * Zwei gegenüberliegende Stationen sehen zwar den AP, aber nicht sich gegenseitig
   * Abgeschottete Nodes sehen sich auch nicht
   * Hier ist RTS/CTS hilfreich
-* Verkehr von AP zu Stationen (Downstream) erfolgt kontrolliert)
+* Verkehr von AP zu Stationen (Downstream) erfolgt kontrolliert
 * Verkehr von Stationen zum AP ist nicht kontrollierbar: Multiple Access
 
 Wenn eine Station senden will, schaut sie ob das Medium schon so lange idle ist, wie DIFS es vorgibt. Dazu kommt noch eine random backoff Time. Dann schaut es nochmal, ob es immernoch idle ist (die random backoff time hilft multiple access). 
@@ -1435,9 +1437,9 @@ Hub/Switches haben TX/RX am Port gekreuzt, deshalb kann man bei ihnen ein Straig
 * 51 AH
 * 115 L2TP
 
-## ARP
+## ARP (Adress Resolution Protocol)
 
-Ermittelt zu einer Netzwerkadresse die physikalische Hardwareadresse. Es wird eine Tabelle als Cache geführt. Für IPv6 passiert dies durchs NDP. Beim Gratuitous ARP teilt man eigenständig, vorgängig mit welche IP man selbst hat.
+Ermittelt zu einer Netzwerkadresse die physikalische Hardwareadresse. Es wird eine Tabelle als Cache geführt. Für IPv6 passiert dies durchs NDP (Neighbor Discovery Protocol). Beim Gratuitous ARP teilt man eigenständig, vorgängig mit welche IP man selbst hat.
 
 ARP funktioniert über MAC-Broadcast. Ein Empfänger schaut nach, ob seine IP-Adresse als Zieladresse enthalten ist, wenn ja antwortet er. Die Antwort wird in die ARP-Tabelle des Senders eingetragen. Gleichzeitig kann sich der Empfänger auch die Zuteilung des Senders merken. Für Request und Reply wird das gleiche Paket-Format verwendet.
 
@@ -1479,7 +1481,7 @@ Netze können sich peeren, damit sie Traffic untereinander ausliefern können. B
   * Regional or national coverage (IP-Plus, Sunrise)
 * Tier 3
   * Top hierarchy (Spint, MCI, AT&T, Level3, QWest, Cable&Wireless)
-  * Link Speeds in oroer of 622Mb/s to 10Gb/s
+  * Link Speeds in order of 622Mb/s to 10Gb/s
   * Swisscom IP-Plus buys from Tier 1 Providers
 
 ## IPv4
@@ -1578,9 +1580,9 @@ IP: 0110 1001 . 0011 1110
 
 # Vorlesungswoche 8 - IPv4/ICMP/NAT
 
-## NAT
+## NAT (Network Address Translation)
 
-Beim NAT übersetzt man eine IP-Adresse in eine andere und führt eine Tabelle. Man kann auch mehrere IP-Adressen auf eine einzelne externe übersetzen, dann braucht es allerdings noch eine weitere Identifikation, wie z.B. die Layer 4-Ports. Wenn die Ports auch noch angepasst werden, nennt man das PAT.
+Beim NAT übersetzt man eine IP-Adresse in eine andere und führt eine Tabelle. Man kann auch mehrere IP-Adressen auf eine einzelne externe übersetzen, dann braucht es allerdings noch eine weitere Identifikation, wie z.B. die Layer 4-Ports. Wenn die Ports auch noch angepasst werden, nennt man das PAT (Port Address Translation).
 
 ### Probleme
 
@@ -1639,7 +1641,7 @@ Beispiel Option Type 7, Record Route
 
 ![12F3BCCA-7E88-4EAB-AB32-3AF40ED278BD](Zusammenfassung-Bilder/12F3BCCA-7E88-4EAB-AB32-3AF40ED278BD.png)
 
-Wenn ein Router die Record Route Option sieht, versucht er seine Adresse dazuzulegen. Wenn das nicht ghet, schickt er ein ICMP Parameter Problem.
+Wenn ein Router die Record Route Option sieht, versucht er seine Adresse dazuzulegen. Wenn das nicht geht, schickt er ein ICMP Parameter Problem.
 
 ### MTU/Fragmentation
 
@@ -1747,7 +1749,7 @@ $$
 
 # Vorlesungswoche 9 - IPv6
 
-* Vergrösserung auf 2^128^ Adressen
+* Vergrösserung auf 2^128 Adressen
 * Vereinfachung der Header-Informationen (weniger Belastung für Router)
 * Automatische Konfiguration
 * Mobile IP
@@ -1947,14 +1949,14 @@ RTP-Header: 12 Byte (mindestens)
 
 ![9F12F1ED-BDBB-4205-9C17-3083341D7D49](Zusammenfassung-Bilder/9F12F1ED-BDBB-4205-9C17-3083341D7D49.png)
 
-* Version: Versionsnummer
-* Padding: ob das Frame mit Padding-Bytes aufgefüllt werden soll
-* Extension: ob eine Header-Erweiterung vorliegt
-* CSRC Count: Anzahl der Contributing Source Random Counter (CSRC) Identifier
-* Marker: markiert ein bestimmtes Profil
+* Version (Ver.): Versionsnummer
+* Padding (P): ob das Frame mit Padding-Bytes aufgefüllt werden soll
+* Extension (X): ob eine Header-Erweiterung vorliegt
+* CSRC Count (CC): Anzahl der Contributing Source Random Counter (CSRC) Identifier
+* Marker (M): markiert ein bestimmtes Profil
 * Payload Type: legt das Format des RTP-Pakets fest
 * Sequence Number: Sortierung
-* Timestamp: Absendezeit in Relation zum TCP-Strom
+* Timestamp: Absendezeit in Relation zum RTP-Strom
 * Sync Source: Zufallszahl zur Unterscheidung von verschiedenen RTP-Quellen
 * Bei gemischten RTP-Strömen können mehrere CSRC zur Identifikation der beitragenden Quelle folgen
 
@@ -1983,11 +1985,11 @@ Ein SIP-Telefonieserver operiert normalerweise im Proxy-Modus. Er ist also Clien
 
 # Versuch 5 - Switching/VLAN
 
-## Link Aggregation
+## Link Aggregation (LAG)
 
 Es gibt statisches LAG und dynamisches LAG. Bei statischem LAG wird alles fix konfiguriert, bietet aber auch keine automatische Umschaltung.
 
-Bei dynamischeem LAG wird über LACP das LAG konfiguriert. Jeder Port ist entweder Active LACP oder Passive LACP. Die Informationen werden als LACPDUs (Protocol Data Units) übertragen. 
+Bei dynamischeem LAG wird über LACP (Link Aggragation Control Protocol) das LAG konfiguriert. Jeder Port ist entweder Active LACP oder Passive LACP. Die Informationen werden als LACPDUs (Protocol Data Units) übertragen. 
 
 * Passive LACP: der Port bevorzugt von sich aus, keine LACPDUs zu übertragen. Nur wenn die Gegenstelle Active LACP hat, überträgt der Port LACPDUs (*preference not to speak unless spoken to*)
 * Active LACP: der Port bevorzugt LACPDUs zu übertragen und somit das Protokoll zu sprechen - unabhängig davon ob die Gegenstelle Passive LACP hat oder nicht (*a preference to speak regardless*)
