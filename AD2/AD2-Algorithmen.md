@@ -61,5 +61,3 @@ Shortests Path with negative edges
 **Topological Sort Graph Algorithm**
 
 [![Topological Sort Graph Algorithm](https://i.ytimg.com/vi/ddTC4Zovtbc/hqdefault.jpg)](https://www.youtube.com/watch?v=ddTC4Zovtbc "Topological Sort Graph Algorithm")
-
-https://www.youtube.com/watch?v=ddTC4Zovtbc
