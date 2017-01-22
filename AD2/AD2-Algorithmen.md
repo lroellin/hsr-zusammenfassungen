@@ -25,3 +25,10 @@ Visual: https://visualgo.net/sorting
 **Floyd–Warshall algorithm in 4 minutes**
 
 [![Floyd–Warshall algorithm in 4 minutes](http://img.youtube.com/vi/4OQeCuLYj-4/0.jpg)](http://www.youtube.com/watch?v=4OQeCuLYj-4 "Floyd–Warshall algorithm in 4 minutes")
+
+# Bellman-Ford 
+Shortests Path with negative edges
+
+**Bellman-Ford in 5 minutes — Step by step example**
+
+[![Floyd–Warshall algorithm in 4 minutes](https://i.ytimg.com/vi/obWXjtg0L64/hqdefault.jpg)](https://www.youtube.com/watch?v=obWXjtg0L64 "Bellman-Ford in 5 minutes — Step by step example")
