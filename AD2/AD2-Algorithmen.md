@@ -55,4 +55,11 @@ Shortests Path with negative edges
 
 **Bellman-Ford in 5 minutes — Step by step example**
 
-[![Floyd–Warshall algorithm in 4 minutes](https://i.ytimg.com/vi/obWXjtg0L64/hqdefault.jpg)](https://www.youtube.com/watch?v=obWXjtg0L64 "Bellman-Ford in 5 minutes — Step by step example")
+[![Bellman-Ford in 5 minutes — Step by step example](https://i.ytimg.com/vi/obWXjtg0L64/hqdefault.jpg)](https://www.youtube.com/watch?v=obWXjtg0L64 "Bellman-Ford in 5 minutes — Step by step example")
+
+## Topological Graph
+**Topological Sort Graph Algorithm**
+
+[![Topological Sort Graph Algorithm](https://i.ytimg.com/vi/ddTC4Zovtbc/hqdefault.jpg)](https://www.youtube.com/watch?v=ddTC4Zovtbc "Topological Sort Graph Algorithm")
+
+https://www.youtube.com/watch?v=ddTC4Zovtbc
