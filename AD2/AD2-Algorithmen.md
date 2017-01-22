@@ -14,6 +14,13 @@ Visual: https://visualgo.net/sorting
 
 Visual: https://visualgo.net/sorting
 
+# KMP
+
+**Knuth–Morris–Pratt(KMP) Pattern Matching(Substring search)**
+
+[![Knuth–Morris–Pratt(KMP) Pattern Matching(Substring search)](https://i.ytimg.com/vi/GTJr8OvyEVQ/hqdefault.jpg)](https://www.youtube.com/watch?v=GTJr8OvyEVQ "Knuth–Morris–Pratt(KMP) Pattern Matching(Substring search)")
+
+
 # Knapsack
 
 **0/1 Knapsack Problem Dynamic Programming**
