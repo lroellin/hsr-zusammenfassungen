@@ -29,6 +29,12 @@ Visual: https://visualgo.net/sorting
 
 [![0/1 Knapsack Problem Dynamic Programming](http://img.youtube.com/vi/8LusJS5-AGo/0.jpg)](http://www.youtube.com/watch?v=8LusJS5-AGoE "0/1 Knapsack Problem Dynamic Programming")
 
+## Longest Common Subsequence
+
+**Longest Common Subsequence**
+
+[![Longest Common Subsequence](http://img.youtube.com/vi/NnD96abizww/0.jpg)](https://www.youtube.com/watch?v=NnD96abizww "Longest Common Subsequence")
+
 # Graphen
 ## Floyd-Warshall
 Transitver Abschluss. Wenn es einen Weg von A zu B und von B zu D gibt, gibt es auch einen von A zu D
