@@ -43,14 +43,16 @@ Transitver Abschluss. Wenn es einen Weg von A zu B und von B zu D gibt, gibt es 
 
 [![Floyd–Warshall algorithm in 4 minutes](http://img.youtube.com/vi/4OQeCuLYj-4/0.jpg)](http://www.youtube.com/watch?v=4OQeCuLYj-4 "Floyd–Warshall algorithm in 4 minutes")
 
-## Dijkstra's algorithm
+## Shortest Path
+
+### Dijkstra's algorithm
 Shortest Path without negative edges
 
 **Dijkstra's algorithm in 3 minutes — Review and example**
 
 [![Dijkstra's algorithm in 3 minutes — Review and example](https://i.ytimg.com/vi/_lHSawdgXpI/hqdefault.jpg)](https://www.youtube.com/watch?v=_lHSawdgXpI "Dijkstra's algorithm in 3 minutes — Review and example")
 
-## Bellman-Ford 
+### Bellman-Ford 
 Shortests Path with negative edges
 
 **Bellman-Ford in 5 minutes — Step by step example**
