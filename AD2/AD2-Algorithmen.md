@@ -29,6 +29,12 @@ Visual: https://visualgo.net/sorting
 
 [![0/1 Knapsack Problem Dynamic Programming](http://img.youtube.com/vi/8LusJS5-AGo/0.jpg)](http://www.youtube.com/watch?v=8LusJS5-AGoE "0/1 Knapsack Problem Dynamic Programming")
 
+## Longest Common Subsequence
+
+**Longest Common Subsequence**
+
+[![Longest Common Subsequence](http://img.youtube.com/vi/NnD96abizww/0.jpg)](https://www.youtube.com/watch?v=NnD96abizww "Longest Common Subsequence")
+
 # Graphen
 ## Floyd-Warshall
 Transitver Abschluss. Wenn es einen Weg von A zu B und von B zu D gibt, gibt es auch einen von A zu D
@@ -49,4 +55,9 @@ Shortests Path with negative edges
 
 **Bellman-Ford in 5 minutes — Step by step example**
 
-[![Floyd–Warshall algorithm in 4 minutes](https://i.ytimg.com/vi/obWXjtg0L64/hqdefault.jpg)](https://www.youtube.com/watch?v=obWXjtg0L64 "Bellman-Ford in 5 minutes — Step by step example")
+[![Bellman-Ford in 5 minutes — Step by step example](https://i.ytimg.com/vi/obWXjtg0L64/hqdefault.jpg)](https://www.youtube.com/watch?v=obWXjtg0L64 "Bellman-Ford in 5 minutes — Step by step example")
+
+## Topological Graph
+**Topological Sort Graph Algorithm**
+
+[![Topological Sort Graph Algorithm](https://i.ytimg.com/vi/ddTC4Zovtbc/hqdefault.jpg)](https://www.youtube.com/watch?v=ddTC4Zovtbc "Topological Sort Graph Algorithm")
