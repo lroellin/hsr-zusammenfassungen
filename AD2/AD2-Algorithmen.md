@@ -15,8 +15,15 @@ Visual: https://visualgo.net/sorting
 
 Visual: https://visualgo.net/sorting
 
+## Bubble Sort
+
+**Bubble Sort**
+Zeigt auch Optimierungsmöglichkeiten
+
+[![Dijkstra's algorithm in 3 minutes — Review and example](https://i.ytimg.com/vi/8Kp-8OGwphY/hqdefault.jpg)](https://www.youtube.com/watch?v=8Kp-8OGwphY "Bubble Sort")
+
 # String Search
-# KMP
+## KMP
 
 **Knuth–Morris–Pratt(KMP) Pattern Matching(Substring search)**
 
