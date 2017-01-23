@@ -63,3 +63,16 @@ Shortests Path with negative edges
 **Topological Sort Graph Algorithm**
 
 [![Topological Sort Graph Algorithm](https://i.ytimg.com/vi/ddTC4Zovtbc/hqdefault.jpg)](https://www.youtube.com/watch?v=ddTC4Zovtbc "Topological Sort Graph Algorithm")
+
+## Minimum Spanning Tree
+
+### Kruskal
+**Kruskal's algorithm in 2 minutes — Review and example**
+
+[![Dijkstra's algorithm in 3 minutes — Review and example](https://i.ytimg.com/vi/71UQH7Pr9kU/hqdefault.jpg)](https://www.youtube.com/watch?v=71UQH7Pr9kU "Kruskal's algorithm in 2 minutes — Review and example")
+
+### Prim
+
+**Prim's algorithm in 2 minutes — Review and example**
+
+[![Dijkstra's algorithm in 3 minutes — Review and example](https://i.ytimg.com/vi/cplfcGZmX7I/hqdefault.jpg)](https://www.youtube.com/watch?v=cplfcGZmX7I "Prim's algorithm in 2 minutes — Review and example")
