@@ -23,6 +23,13 @@ Zeigt auch Optimierungsmöglichkeiten
 [![Dijkstra's algorithm in 3 minutes — Review and example](https://i.ytimg.com/vi/8Kp-8OGwphY/hqdefault.jpg)](https://www.youtube.com/watch?v=8Kp-8OGwphY "Bubble Sort")
 
 # String Search
+## Boyer-Moore
+
+** Advanced String Searching Boyer-Moore-Horspool **
+
+[![Advanced String Searching Boyer-Moore-Horspool](https://i.ytimg.com/vi/QDZpzctPf10/hqdefault.jpg)]
+(https://www.youtube.com/watch?v=QDZpzctPf10)
+
 ## KMP
 
 **Knuth–Morris–Pratt(KMP) Pattern Matching(Substring search)**
