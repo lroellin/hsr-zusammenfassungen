@@ -84,6 +84,8 @@ public class MultiThreadTest {
 }
 ```
 
+Feinheiten: Wenn man statt ``start()`` ``.run()`` aufruft, wird nur die Methode aufgerufen und folglich sequentiell abgearbeitet.
+
 ## Runnable
 
 Runnable sind Alternative zum Vererben von Thread. Runnable ist ein Interface statt eine Klasse, von derman erben muss (wie Thread), so dass man eine andere Basisklasse angeben kann.
@@ -103,7 +105,7 @@ myThread.start();
 
 ## Lambda
 
-Jetzt kann man aber gleich weitergehen und dies mit einem Lambda abhandeln. Wir implementieren das Runnable-Interface mit run():
+Weil ``Runnable`` nur ``run()`` implentiert (nur eine Methode), können wir es mit einem Lambda direkt behandeln.
 
 ```java
 Thread myThread = new Thread(() -> {
@@ -153,6 +155,8 @@ try {
     System.out.println("Threads joined");
 } catch (InterruptedException e) { }
 ```
+
+Feinheiten: falls ein Thread noch nicht gestartet wurde, kehrt ``join()`` sogleich zurück.
 
 ## InterruptedException
 
