@@ -32,7 +32,7 @@ Die JVM ist ein Single Process System. Sie erzeugt beim Aufstarten einen Thread,
 
 Gewisse Subsysteme/Laufzeitsysteme starten auch eigene Threads, z.B. AWT oder der Garbage Collector.
 
-Die JVM läuft, solange Threads laufen Ausnahme hierzu sind Threads, die sich als Daemon markiert haben,auf diese wartet Java nicht (wie z.B. der Garbage Collector). Daemon-Threads brechen bei JVM-Ende unkontrolliert ab. Die JVM kann andererseits mit `System.exit()/Runtime.exit()` direkt terminiert werden, was aber unsauber ist. Alle Threads werden unkontrolliert abgebrochen.
+Die JVM läuft, solange Threads laufen Ausnahme hierzu sind Threads, die sich als Daemon markiert haben,auf diese wartet Java nicht (wie z.B. der Garbage Collector). **Daemon-Threads brechen bei JVM-Ende unkontrolliert ab**. Die JVM kann andererseits mit `System.exit()/Runtime.exit()` direkt terminiert werden, was aber unsauber ist. Alle Threads werden unkontrolliert abgebrochen.
 
 ## Erzeugung eines Threads
 
