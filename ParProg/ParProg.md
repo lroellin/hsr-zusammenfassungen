@@ -166,6 +166,8 @@ Ist eine mögliche Exception bei blockierenden Aufrufen wie `sleep()` oder `joi
 
 Sie wird oft zum Aufbrechen von Blockaden missbraucht. Dabei hinterlässt sie meist inkonsistente Zwischen-zustände, oder die Exception wird ignoriert und es wird weiter blockiert.
 
+Achtung: Daemons hören nicht auf ``ÌnterruptedException``s! http://stackoverflow.com/questions/31252227/how-does-daemon-thread-survive-after-jvm-exits
+
 ## Weitere Thread-Methoden
 
 * ``staticThreadcurrentThread()`` Gerade ausführendeThread-Instanz
