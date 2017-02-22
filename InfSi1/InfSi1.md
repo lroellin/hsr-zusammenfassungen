@@ -50,6 +50,8 @@ Eine Schwachstelle bezeichnet die Schwäche einer Schutzmassnahme die durch eine
 
 ## Gefährdung (Hazard, Applied Threat) = Bedrohung + Schwachstelle
 
+![0CD11743-4498-493F-9CD3-2D305373798E](Bilder/0CD11743-4498-493F-9CD3-2D305373798E.png)
+
 # Risikomanagement
 
 Risikoidentifikation (Ereignisliste) $\rightarrow$ Risikobewertung (Risikomatrix) $\rightarrow$ Risikobewältigung (Massnahmen)
@@ -62,12 +64,16 @@ Risiko = Wahrscheinlichkeit eines Zwischenfalls * Schaden = Bedrohung * Verletzl
 
 ## Risikoidentifikation mittels Risikotabelle, Ereignis-Gefahrenliste
 
-Beispiel: Gefahrenliste bei einer Treuhandfirma
+Beispiel: Gefahrenliste bei einer Treuhandfirma (ohne Spalten Nr., Verantwortlich, Termin)
 
-| Nr.                                      | Gefahrengebiet                           | Risikobeschrieb | Eintretenswahrscheinlichkeit | Schadenpotenzial | Verantwortlich                           | Massnahmen    | Termin |
-| ---------------------------------------- | ---------------------------------------- | --------------- | ---------------------------- | ---------------- | ---------------------------------------- | ------------- | ------ |
-| Strategische Bedrohung, Laufende Geschäftstätigkeit | Abhängig von wenigen Kunden, Verlust von Kunden führt zu Entlassungen | möglich         | existenzbedrohend            | XY               | Vergrösserung des Kundenstamms durch Fokussierung auf eine weitere Branche, Ausarbeiten Marketingplan | Dezember 20xx |        |
-|                                          |                                          |                 |                              |                  |                                          |               |        |
-|                                          |                                          |                 |                              |                  |                                          |               |        |
-|                                          |                                          |                 |                              |                  |                                          |               |        |
-|                                          |                                          |                 |                              |                  |                                          |               |        |
+| Gefahrengebiet                           | Risikobeschrieb                          | Eintretenswahrscheinlichkeit | Schadenpotenzial  | Massnahmen                               |
+| ---------------------------------------- | ---------------------------------------- | ---------------------------- | ----------------- | ---------------------------------------- |
+| Strategische Bedrohung, Laufende Geschäftstätigkeit | Abhängig von wenigen Kunden, Verlust von Kunden führt zu Entlassungen | möglich                      | existenzbedrohend | Vergrösserung des Kundenstamms durch Fokussierung auf eine weitere Branche, Ausarbeiten Marketingplan |
+| Management und Mitarneiter, Verhalten    | Veruntrueung durch einen Mitarbeiter/Imageverlust | sehr selten                  | existenzbedrohend | Überprüfung Unterschriftsberechtigung, Freigabeprozess, Überwachungsprozess |
+| Management und Mitarbeiter, unlautere, ungetreue Geschäftspraktiken | Ungenaue (lasch, oberflählich, unseriös) Umsetzung von Geschäftsstandards | unwahrscheinlich             | existezbedrohend  | Funktionsaudits durch Vorgesetzten, Kundenbefragung, Aus- und Weiterbildung |
+| Operative Bedrohung, Gefahren für Produktionsanlagen | Überschwemmung Büroräumlichkeiten        | sehr selten                  | existenzbedrohend | Neuer EDV-Raum im 1. Stock des Gebäudes, prüfen Standortverlegung |
+| Fnanzielle Bedrohung, Liquidität und Zahlungsausfall | Überschreiten der Kreditlimite, Belastung hoher Zinsen durch die Bank | häufig                       | spürbar           | Prozess für das Mahnwesen erbessern, Liquiditätsplanung verbessern |
+
+## Risikobewertung (Risikomatrix)
+
+![C43ABEC9-D67C-4D51-9CFB-1BEC8487275D](Bilder/C43ABEC9-D67C-4D51-9CFB-1BEC8487275D.png)
