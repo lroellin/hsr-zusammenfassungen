@@ -1,3 +1,7 @@
+---
+typora-copy-images-to: ./Bilder
+---
+
 # Multi-Threading Grundlagen
 
 ## Prozesse vs. Threads
@@ -175,3 +179,221 @@ Achtung: Daemons hören nicht auf ``ÌnterruptedException``s! http://stackoverfl
 * `String getName(),void setName(String name)` Thread-Name einstellen.
   * Beim Konstruktor `Thread(String name), Thread(Runnable r, String name)`
   * Für diagnostische Ausgaben: Default: Thread-0, Thread-1, ...
+
+# Synchronisation
+
+Ohne Vorkehrungen laufen Threads beliebig verzahnt oder parallel. Oft muss die Nebenläufigkeit von Threads aber beschränkt werden.
+
+> Synchronisation = Einschränkung der Nebenläufigkeit
+
+## Fälle für Synchronisation
+
+**Gegenseitiger Ausschluss (mutual exclusion:** nur einer darf die Kaffeemaschine auf einmal benutzen, nur eine Vorlesung zur gleichen Zeit im gleichen Raum
+
+**Warten auf Bedingungen:** Post erst abholen, wenn sie angeliefert worden ist, Telefon: erst reden wenn Gegenstelle abgenommen hat 
+
+## Synchronized
+
+Mit dem Java ``synchronized``-Keyword können Methoden mit gegenseitigem Ausschluss abgesichert werden. Der Body der Methode ist dann ein kritischer Abschnitt. 
+
+```java
+class BankAccount {
+  private int balance = 0;
+  
+  public synchronized void deposit(int amount) {
+    this.balance += amount;
+  }
+}
+```
+
+Jedes Objekt erbt von ``Object`` den Monitor-Lock. Maximal ein Thread kann denselben Lock haben. Der ``synchronized``-Block belegt den Lock des Objekts. 
+
+* Bei Eintritt
+  * Falls frei: besetzen
+  * Falls besetzt: warten bis frei
+* Bei Austritt: wieder freigeben
+
+### Mehrere Methoden
+
+Das Keyword ``synchronized`` kann auch bei mehreren Methoden stehen. Dabei gilt weiterhin, dass der Lock nur einmal pro Objekt existiert. Das Beispiel von vorhin erweitert:
+
+```java
+class BankAccount {
+  private int balance = 0;
+  
+  public synchronized void deposit(int amount) {
+    this.balance += amount;
+  }
+  
+  public synchronized boolean withdraw(int amount) {
+    if(amount > this.balance) {
+      this.balance -= amount;
+      return true
+    } else { // keine Kreditbank
+      return false;
+    }
+  }
+}
+```
+
+
+
+In diesem Code schliessen sich zwei gleichzeitige Aufrufe von ``deposit()`` und ``withdraw()`` in jeglichen Kombinationen aus.
+
+### Funktion vs. Block
+
+``synchronized`` kann auch in der Block-Variante verwendet werden. Dort kann angegeben werden, welches Objekt gelockt werden soll. Es ist dann auch nicht die ganze Methode gelockt, sondern nur dieser Block:
+
+```java
+public void deposit(int amount) {
+  synchronized(this) {
+    this.balance += amount;
+  }
+}
+```
+
+#### Äquivalenzen
+
+```java
+public class Test {
+  synchronied void f() {...} // Object Lock
+  static synchronized void g() {...} // Class Lock
+}
+```
+
+$$
+\iff
+$$
+
+```java
+public class Test {
+  void f() {
+    synchronized(this) {...} // Object Lock
+  }
+  static void g() {
+    synchronized(Test.class) {...} // Class Lock
+  }
+}
+```
+
+### Exit aus Synchronzed Block
+
+Der Lock wird bei jedem Exit freigegeben
+
+* Ende des Blocks
+* Return-Statements
+* Unbehandelte Exception
+
+### Rekursive Locks
+
+Gleicher Thread kann denselben Lock mehrfach beziehen, z.B. durch geschachtelte Aufrufe. Der Lock wird erst beim letzten Release freigegeben. Realisiert wird dies intern durch einen Counter. Beispiel:
+
+```java
+synchronized void limitedDeposit(int amount) {
+  if(amount + balance <= limit) {
+    deposit(amount)
+  }
+}
+synchronized void deposit(int amount) {...}
+```
+
+## Monitor - Warten auf Bedingungen
+
+Angenommen, unsere ``withdraw()``-Methode wäre gutgläubig und geduldig. Anstatt einen Fehler zurückzugeben, wartet sie ab, bis genügend Geld vorhanden ist.
+
+```java
+public synchronized void withdraw(int amount) throws InterruptedException {
+  while (amount > this.balance) {
+    Thread.sleep(1);
+  }
+  this.balance -= amount;
+}
+```
+
+Das Problem ist, dass dieser Ansatz sehr naiv ist. Wenn nun eine Methode im ``withdraw()`` wartet, hat sie ja bereits den Lock des Objekts - das bedeutet, niemand kann die ``deposit()``-Methode aufrufen. Es kann also gar nie Geld ankommen.
+
+``sleep()`` und ``yield()`` geben den Lock nicht frei. Zudem ist das Pollen in Zeitabständen ineffizient. Was lernen wir daraus? 
+
+> ``synchronized`` ist nicht für Wartebedingungen.
+
+Wir benötigen den *Wait & Signal*-Mechanismus des Monitors. 
+
+### Monitor
+
+Ein Monitor ist ein Objekt mit internem, gegenseitigen Ausschluss. Nur ein Thread operiert zur gleichen Zeit im Monitor. Nicht-private Methoden sind alle ``synchronized``, alle Variablen privat.
+
+Im Wait & Signal-Mechanismus können Threads im Monitor auf Bedingung warten. Threads können die Bedingung signalisieren und wartende Threads aufwecken.
+
+![F40951E8-DECF-486F-B4FF-C976C8911563](Bilder/F40951E8-DECF-486F-B4FF-C976C8911563.png)
+
+### Beispiel
+
+```java
+class BankAccount {
+  public int balance = 0;
+  
+  public synchronized void withdraw(int amount) throws InterruptedException {
+    while (amount > balance) {
+      wait(); // warte bis geweckt und prüfe erneut
+    }
+    balance -= amount;
+  }
+  
+  public synchronized void deposit(int amount) {
+    balance += amount;
+    notifyAll(); // wecke alle
+  }
+}
+```
+
+### Details
+
+Wieso funktioniert das? ``wait`` gibt den Monitor-Lock temporär frei, damit ein anderer Thread die Bedingung im Monitor erfüllen kann.
+
+``wait``macht:
+
+1. In Warteraum gehen
+2. Monitor freigeben
+3. (Inaktiv bis zum Wecksignal)
+4. Monitor neu beziehen
+
+Wecksignal: signalisieren einer Bedingung im Monitor
+
+* ``notify()``weckt *einen* **beliebigen** wartenden Thread im Monitor
+* ``notifyAll()`` weckt alle im Monitor wartende Threads
+* kein Effekt, falls kein Thread wartet
+
+Beim Aufruf dieser Methoden: *Signal and continue*
+
+1. weckt man (alle) Thread(s) in ``wait``
+2. Behält man den Monitor und macht weiter
+
+Für den Moment kennen wir nur pauschales Wait & Signal. Ich muss selber schauen, ob nach dem Signal die Bedingung nun erfüllt ist.
+
+``wait()``, ``notify()`` und ``notifyAll()`` sind nur im ``synchronized``-Block verwendbar, ansonsten gibt es eine ``IllegalMonitorStateException``. Bei ``wait`` mit rekursiven Locks, werden alle gehaltenen Locks auf diesem Obkekt temporär freigegeben.
+
+Gründe zum Aufwachen aus ``wait()``: 
+
+* ``notifyAll()``, ``notify()``
+* InterruptedException
+* Spurious Wakeup (eher akademisch)
+
+### Funktionsweise des Monitors
+
+Der Monitor unterscheidet den äusseren und den inneren Warteraum. Ein Thread kommt erstmal am äusseren Warteraum an, bis er den Monitor betreten kann (den Lock besetzen). Falls ein Thread den Lock besitzt, ist er im Monitor. Ruft er dprt ``wait`` auf, wandert er in den inneren Warteraum und gibt den Lock frei. Nun kann ein anderer Thread den Lock besetzen und potentiell die Wartenden benachrichtigen (im inneren Warteraum). Diese wandern dann in den äusseren Warteraum, wo sie (wie alle anderen Threads) auf den Wiedereintritt in den Monitor warten.
+
+![5803F5B5-C973-4540-9148-C794A1DD799E](Bilder/5803F5B5-C973-4540-9148-C794A1DD799E.png)
+
+### Typische Fallen/Antipattern (bei Wartebedingungen)
+
+**Bedingung prüfen mit ``if``:** das Signal sagt nur, dass man nun nochmals prüfen soll, nicht dass es nun erfüllt ist. Darum:
+
+> Immer mit ``while`` prüfen
+
+**Bei Wartebedingung nur mit ``notify()`` signalisieren:** es kann sein, dass sich für beide Bedingungen eines Werts (z.B. *nicht leer* und *nicht voll*) mehrere Threads anstauen. ``notify()`` weckt aber nur *irgendeinen* Thread auf. Falls dieser Thread auch auf irgendeine Bedingung wartet, wird kein anderer Thread aufgeweckt, der weitermachen kann.
+
+> Immer notifyAll() verwenden
+
+### Fairness-Probleme
+
+In Java gibt es keine garantierte FIFO-Warteschlange. Einige Threads könnten so nie drankommen. Bei Signal-and-Continue kommen aufgeweckte Threads in den äusseren Warteraum und können kontinuierlich überholt werden. Es ist aber auch bei FIFO-Warteschlangen (.NET) nicht garantiert fair, da *hinten* eingereiht wird (es kommen erst die bereits aussen wartenden Threads dran)
