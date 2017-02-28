@@ -392,7 +392,7 @@ Der Monitor unterscheidet den äusseren und den inneren Warteraum. Ein Thread ko
 
 **Bei Wartebedingung nur mit ``notify()`` signalisieren:** es kann sein, dass sich für beide Bedingungen eines Werts (z.B. *nicht leer* und *nicht voll*) mehrere Threads anstauen. ``notify()`` weckt aber nur *irgendeinen* Thread auf. Falls dieser Thread auch auf irgendeine Bedingung wartet, wird kein anderer Thread aufgeweckt, der weitermachen kann.
 
-> Immer notifyAll() verwenden
+> Immer ``notifyAll()`` verwenden
 
 ### Fairness-Probleme
 
