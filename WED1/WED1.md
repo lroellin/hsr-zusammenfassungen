@@ -12,7 +12,17 @@ Markup gibt dem Text Semantik. Sie sind deklarativ, und beschreiben eine Bedeutu
 
 ## Encoding
 
-Wenn möglich: UTF-8. TODO: nochmal genau nachschlagen, das kam irgendwie nicht so ganz raus wies funktioniert...
+> Wenn möglich: UTF-8
+
+Bei UTF-8 sind die einzelnen Zeichen mehrere Bytes lang (1-4 in der aktuellen Spezifikation). Wieviele Bytes es sind, ist im ersten Byte geschrieben. 
+
+* 1 Byte: ``0xxx xxxx``
+  * Die 7 Bits sind exakt dieselben wie in ASCII
+* 2 Bytes: ``110x xxxx``
+* 3 Bytes: ``1110 xxxx``
+* 4 Bytes: ``1111 0xxx``
+
+Danach folgen mehrere Bytes mit einem speziellen Präfix: ``10xx xxxx``. Wer es ganz genau wissen will: https://en.wikipedia.org/wiki/UTF-8#Description
 
 # HTML Dokument
 
