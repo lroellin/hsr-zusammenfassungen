@@ -16,13 +16,16 @@ Markup gibt dem Text Semantik. Sie sind deklarativ, und beschreiben eine Bedeutu
 
 Bei UTF-8 sind die einzelnen Zeichen mehrere Bytes lang (1-4 in der aktuellen Spezifikation). Wieviele Bytes es sind, ist im ersten Byte geschrieben. 
 
-* 1 Byte: ``0xxx xxxx``
+* 1 Byte: ``0xxx xxxx`` (Spezialfall)
   * Die 7 Bits sind exakt dieselben wie in ASCII
+  * Bleibt man also im ASCII-Bereich, so "merkt" man nichts von UTF-8.
 * 2 Bytes: ``110x xxxx``
 * 3 Bytes: ``1110 xxxx``
 * 4 Bytes: ``1111 0xxx``
 
 Danach folgen mehrere Bytes mit einem speziellen Präfix: ``10xx xxxx``. Wer es ganz genau wissen will: https://en.wikipedia.org/wiki/UTF-8#Description
+
+UTF-16 arbeitet mit 16 Bit Blöcken (UTF-8 mit 8 Bit Blöcken).
 
 # HTML Dokument
 
@@ -47,7 +50,7 @@ Das DOM davon (mit H1 und P im Body):
 
 ## Elemente
 
-Die meisten Elemente benötigen einen closing-Tag. void-Elemente dürfen nicht geschlossen werden, sondern müssen offen gelassen werden, oder mit XML End Mark geschlossen werden (``/>``)
+Die meisten Elemente benötigen einen closing-Tag. void-Elemente dürfen nicht geschlossen werden, sondern müssen offen gelassen werden, oder mit XML End Mark geschlossen werden (``/>``), wenn man den XHTML-Standard befolgen will.
 
 ## Attribute
 
