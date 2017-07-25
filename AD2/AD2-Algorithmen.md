@@ -25,10 +25,9 @@ Zeigt auch Optimierungsmöglichkeiten
 # String Search
 ## Boyer-Moore
 
-** Advanced String Searching Boyer-Moore-Horspool **
+**Advanced String Searching Boyer-Moore-Horspool**
 
-[![Advanced String Searching Boyer-Moore-Horspool](https://i.ytimg.com/vi/QDZpzctPf10/hqdefault.jpg)]
-(https://www.youtube.com/watch?v=QDZpzctPf10)
+[![Advanced String Searching Boyer-Moore-Horspool](https://i.ytimg.com/vi/QDZpzctPf10/hqdefault.jpg)](https://www.youtube.com/watch?v=QDZpzctPf10)
 
 ## KMP
 
