@@ -1,1 +1,0 @@
-Erstellt mit Typora. Das meiste sollte Markdown sein, die $$ $$-Teile sind LaTeX-Formeln.
