@@ -2,26 +2,9 @@
 typora-copy-images-to: ./Bilder
 ---
 
-# TODO
-
-IndustrialLogic:
-
-* Code Smells
-* Refactoring
-* Test Driven Development
-  * Welcome To Test-Driven Development
-  * The TDD Cycle
-  * This Will Never Work
-  * TDD Patterns
-  * The TDD Cycle: A Deeper Look
-  * Recording your performance
-  * A TDD Rhythm Exercise
-
 # Domi
 
 Code Smells: https://docs.google.com/document/d/19wmWXyuv2zrB0CQNeXxNxoptYuIgV_DTP6rNWyJlLjI/edit
-
-
 
 # Smells
 
@@ -83,8 +66,12 @@ Code Smells: https://docs.google.com/document/d/19wmWXyuv2zrB0CQNeXxNxoptYuIgV_D
 
 https://refactoring.com/catalog/
 
-* Extract Method, Inline Method
-  Code extrahieren und mit einem Methodennamen versehen; Code der zusammengehört zusammenbringen
+
+
+* Extract Method
+  Code extrahieren und mit einem Methodennamen versehen; 
+* Inline Method
+  Code der zusammengehört zusammenbringen
 
 ```java
 int getRating() {
@@ -101,49 +88,120 @@ int getRating() {
 }
 ```
 
-* Extract Variable, Inline Temp
-  You have a complicated expression.
-  Put the result of the expression, or parts of the expression, in a temporary variable with a name that explains the purpose.
-  Inline Temp => siehe Inline Method
+​	Dabei wird `moreThanFiveLateDeliveries` gelöscht
+
+​	=> Gegenteil von Extract Method
+
+* Extract Variable
+  Komplizierter Ausdruck => speichere Ausdruck oder Teile davon in temporärer Variable
+* Inline Temp => siehe Inline Method
+  => Gegenteil von Extract Variable
 * Replace Temp with Query
-  Variable mit einer Methode zu ihrer Berechnung ersetzen
+  Temporäre Variable nur einmal mit Ausdruck initalisiert => extrahiere Ausdruck in Methode, ersetze Referenzen auf Variable durch Methodenaufruf
 * Rename Method/field/parameter
-* Move Method (inkl. pull up/push down)
-* Move Field (inkl. pull up/push down)
-* Change Value to Reference, Change Reference to Value
+  Name widerspiegelt nicht den Zweck => umbenennen
+* Move Method/Field (inkl. pull up/push down)
+  * Pull Up: mehrere Subklassen haben gleiche Methode/Field => in die Basisklasse verschieben
+  * Push Down: Verhalten in Basisklasse ist nur für Teil von Subklassen relevant => verschiebe in entsprechende Subklassen (evtl. Mittelklasse einbauen)
+* Change Value to Reference, Change Reference to Value..
+  * Value-Objekt verwenden wenn immutable möglich => Cyrill
 * Replace Magic Number with Symbolic Constant
 * Change Method Signature
 * Encapsulate Field
+  * public Attribut => private machen, Getter und Setter
 * Replace Type Code with Class/Subclass
+  * Klasse hat ein Typ-Attribut => Klasse-Subklasse verwenden
 * Replace Type Code with State/-Strategy
+  * Klasse hat ein *veränderliches* Typ-Attribut => State/Strategy Pattern
 * Decompose Conditional
+  * Kompliziertes if-then-else (Bedingung und Blöcke) => Bedingung extrahieren, then- und if-Block extrahieren
 * Replace Nested Conditional with Guard Clauses
+  * Geschachtelte Bedingungen machen Normalablauf unübersichtlich => verwende für Spezialfälle Guards und entsprechende Methoden
 * Introduce Null Object
+  * Es finden wiederholt null-Überprüfungen statt => nehme spezielles Null-Objekt (Null-Klasse)
 * Replace Constructor with Factory Method
+  * Die Erzeugung eines Objekts ist komplex => verwende Factory-Method
 * Replace Exception with Test
+  * Eine Methode (die man nicht kontrolliert) wirft eine Exception aufgrund eines Parameters => der Caller soll den Parameter seinerseits überprüfen.
 * Extract Subclass/Superclass
+  * ähnlich Push Down
 * Extract Interface
 * Collapse Hierarchy
 * Replace Inheritance with Delegation
+  * Eine Subklasse verwendet nur ein Teil des Interfaces der Basisklasse
+    Oder die Subklasse braucht vererbte Daten nicht.
+    => Erzeuge in der Subklasse eine Referenz zur Basisklasse und ändere Methoden, so dass sie über die Referenz an Basisklasse delegieren, löse Vererbung auf	
 * Oddball Solution: Substitute Algorithm [Fowler], Unify Interfaces with Adapter (GOF)
 
-# Code Smells => Refactorings (Rudin, S. 52-62)
+# Code Smells => Refactorings (Rudin S. 52-62)
+
+* Smell Conditional Complexity
+
+  * Wenn Fallunterscheidungen für verschiedene Berechnungen:
+    Replace Conditional Logic with Strategy
+
+  * Wenn Fallunterscheidungen **Zustandsübergänge** eines Objektes kontrollieren:
+
+    Replace State-Altering Conditionals with State
+
+  * Wenn Fallunterscheidungen für Zusatzfunktionalität zu Kernklasse:
+    Move Embellishment (Ausschmückung) to Decorator
+
+  * Wenn viele Fallunterscheidungen für Spezialfall „Objekt nicht vorhanden"
+    Introduce Null Object
+
+* Refactoring Replace Conditional Logic with Strategy **S. 53**
+  Conditional logic in a method controls which of several variants of a calculation are executed
+  =>		
+  Create a Strategy for each variant and make the method delegate the calculation to a Strategy instance.
+
+* Refactoring Replace State-Altering Conditionals with State **S.54**		
+  The conditional expressions that control an object's state transitions are complex.
+  =>
+  Replace the conditionals with State classes that handle specific states and transitions between them.	
+
+* Refactoring Move Embellishment to Decorator **S.55**
+  Code provides an embellishment to a class' core responsibility.
+  => 
+  Move the embellishment code to a Decorator.
+
+* Refactoring Introduce Null Object **S.56**
+  Logic for dealing with a null field or variable is duplicated throughout your code.
+  => 
+  Replace the null logic with a Null Object: an object that provides the appropriate null behavior.
+
+* Smell Indecent Exposure **S.57**
+  => Encapsulate Classes with Factory oder Dependency Injection
+
+* Refactoring Encapsulate Classes with Factory **S.58**
+  Clients directly instantiate classes that residein one package and implement a common interface.
+  => 
+  Make the class constructors non-public and let clients create instances of them using a Factory.
+
+* Smell Oddball Solution **S.59**
+
+  * Substitute Algorithm oder
+
+  * Unify Interfaces with Adapter **S.60**
+    Clients interact with two classes, one of which has a preferred interface.
+
+    =>
+    Unify the interfaces with an Adapter.
+
+* Smell Solution Sprawl (a.k.a. Shotgun Surgery) **S.61**
+
+  * Move Creation Knowledge to Factory **S.62**		
+    Data and code used to instantiate a class is sprawled across numerous classes.
+    => 
+    Move the creation knowledge into a single Factory class.
+
+## IndustrialLogic
 
 ![361D9860-4342-4F1F-B1B4-622C7F85F750](Bilder/361D9860-4342-4F1F-B1B4-622C7F85F750.png)
 
 ![3C667D5F-D699-4CB0-8C82-AD6176CD9791](Bilder/3C667D5F-D699-4CB0-8C82-AD6176CD9791.png)
 
 ![A6C4C2D7-A5D2-4FF5-AE70-3AA5632A31BB](Bilder/A6C4C2D7-A5D2-4FF5-AE70-3AA5632A31BB.png)
-
-* Smell Conditional Complexity => mehrere Refactorings möglich
-* Refactoring Replace Conditional Logic with Strategy
-* Refactoring Replace State-Altering Conditionals with State
-* Refactoring Move Embellishment to Decorator
-* Refactoring Introduce Null Object
-* Smell Indecent Exposure -> Encapsulate Classes with Factory oder Dependency Injection
-* Refactoring Encapsulate Classes with Factory
-* Smell Oddball Solution -> Substitute Algorithm oder Unify Interfaces with Adapter
-* Smell Solution Sprawl (a.k.a. Shotgun Surgery) -> Move Creation Knowledge to Factory
 
 # Test-Driven Development
 
