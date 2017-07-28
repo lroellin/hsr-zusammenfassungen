@@ -2,10 +2,6 @@
 typora-copy-images-to: ./Bilder
 ---
 
-# Domi
-
-Code Smells: https://docs.google.com/document/d/19wmWXyuv2zrB0CQNeXxNxoptYuIgV_DTP6rNWyJlLjI/edit
-
 # Smells
 
 * Speculative Generality
