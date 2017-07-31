@@ -1404,3 +1404,325 @@ Wieso sind die modernen Collections nicht mehr thread-sicher?
 * Liveness
   * Keine Starvation
     * wenn ein Thread auf eine Bedingung wartet, soll er nach einer bestimmten Zeit fortschreiten können, sofern die Bedingung genügend oft erfüllt wird
+
+# Thread Pools
+
+## Konzept und Funktionsweise
+
+**Task Queue**
+
+* Tasks implementieren potentiell parallele Arbeitspakete
+* Auszuführende Tasks werden in Warteschlange eingereiht
+
+**Thread Pool**
+
+* Beschränkte Anzahl von Worker-Threads
+* Holen Tasks aus der Warteschlange und führen sie aus
+
+## Vorteile und Einschränkungen
+
+* Beschränkte Anzahl von Threads
+  * Viele Threads verlangsamen System oder überschreiten verfügbaren Speicher
+* Recycling der Threads
+  * Spare Thread-Erzeugung und Freigabe
+* Höhere Abstraktion
+  * Trenne Task-Beschreibung (*Problem Space*) von Task-Ausführung (*Machine Space*)
+* Anzahl Threads pro System konfigurierbar
+  * Anzahl Worker-Threads = Anzahl Prozessoren + Anzahl I/O Aufrufe
+
+### Neuer Free Lunch
+
+Programme mit Task modellieren
+
+* Laufen automatisch schneller auf parallelen Maschinen
+* Ermöglicht Ausschöpfung der Parallelität ohne hohe Thread-Kosten
+
+### Einschränkungen
+
+Tasks dürfen nicht aufeinander warten, dies führt zu einem Deadlock.
+
+Ein Task muss zuende laufen, bevor der Worker Thread einen anderen Task ausführen kann. Ausnahme sind geschachtelte Sub-Tasks.
+
+## Fork & Join Pool
+
+Gibt es seit Java 7/8. Im Gegensatz zu den einfachen Executors (seit Java 5) unterstützt er rekursive Aufgaben und ist effizient implementiert.
+
+### Task Lancierung
+
+```java
+ForkJoinPool threadPool = new ForkJoinPool; // moderner Thread Pool
+Future<Integer> future = threadPool.submit(() -> {
+  int value = ...;
+  // long calculation
+  return value;
+})
+```
+
+## Zählen von Primzahlen
+
+Wieviele Primzahlen gibt es zwischen 2 und N?
+
+Sequentiell:
+
+```java
+int counter = 0;
+for (int number = 2; number < N; number++) {
+  if (isPrime(number)) {
+    counter++;
+  }
+}
+```
+
+Paralleler Ansatz: paralleles Zählen mit linkem Teil/rechtem Teil
+
+```java
+Future<Integer> left = threadPool.submit(() -> count(leftPart));
+Future<Integer> right = threadPool.submit(() -> count(rightPart));
+
+result = left.get() + right.get();
+```
+
+Das ganze kann auch rekursiv geschehen, Tasks können auf Sub-Tasks warten
+
+```java
+class CountTask extends RecursiveTask<Integer> {
+  // Constructor
+  
+  @Override
+  protected Integer compute() {
+    // if no or single element => return result
+    // split into two parts
+    CountTask left = new CountTask(leftPart);
+    CountTask right = new CountTask(rightPart);
+    left.fork();
+    right.fork();
+    return right.join() + left.join();
+  }
+}
+```
+
+### Pool auswählen
+
+Expliziter Thread-Pool
+
+```java
+ForkJoinPool threadPool = new ForkJoinPool();
+int result = threadPool.invoke(new CountTask()); // blockiert
+```
+
+Standard Pool (Java 8): ForkJoinPool.commonPool()
+
+```java
+int result = new CountTask().invoke();
+```
+
+### Fork Join Pool
+
+Beim alten Executor führten Untertasks zu einem Deadlock
+
+Tasks erben von `RecursiveTask<T>`:
+
+* `T compute()` Task Implementierung
+* `fork()` Starte als Sub-Task in einem anderen Task
+* `T join()` Warte auf Task-Ende und frage Resultat ab
+* `T invoke()` Ein Sub-Task starten und abwarten
+* `invokeAll()` mehrere Sub-Tasks starten und abwarten
+
+`RecursiveAction`, falls kein Rückgabetyp
+
+* `void` statt `T`
+
+### Konkreter Ausbau
+
+```java
+class CountTask extends RecursiveTask<Integer> {
+  private final int lower, upper;
+  
+  public countTask(int lower, int upper) {
+    this.lower = lower;
+    this.upper = upper;
+  }
+  
+  @Override
+  protected Integer compute() {
+    // no element
+    if (lower == upper) { return 0; }
+    // single element
+    if (lower + 1 == upper) { return isPrime(lower) ? 1 : 0; }
+    
+    int middle = (lower + upper) / 2;
+    CountTask left = new CountTask(lower, middle);
+    CountTask right = new CountTask(middle, upper);
+    left.fork();
+    right.fork();
+    return right.join() + left.join();
+  }
+}
+```
+
+### Keine Über-Parallelisierung
+
+```java
+protected Integer compute() { 
+  if (upper - lower > THRESHOLD) {
+    // parallel count
+    int middle = (lower + upper) / 2;
+    CountTask left = new CountTask(lower, middle); 
+    CountTask right = new CountTask(middle, upper);
+    left.fork();
+    right.fork();
+    return right.join() + left.join();
+  } else {
+    // sequential count
+    int count = 0;
+    for (int number = lower; number < upper; number++) {
+      if (isPrime(number)) { count++; } }
+    return count;
+  }
+}
+```
+
+### Fork-Join Reihenfolge
+
+In diesem konkreten Beispiel ist die rechte Hälfte potentiell um eins kleiner. Darum kann man die rechte Hälfte zuerst abfragen:
+
+![442F6949-4310-4AFA-8DDE-FD007F51B8E0](Bilder/442F6949-4310-4AFA-8DDE-FD007F51B8E0.png)
+
+## Fork Join Pool Internals
+
+> Worker-Threads laufen als Daemon-Threads
+
+Automatischer Parallelitätsgrad
+
+* Default: #Worker Threads im Pool = # Prozessoren
+* Dynamisches Hinzufügen/Wegnehmen von Threads
+* Ziel: genügend aktive/laufende Worker Threads
+* Jedoch nicht garantiert (wäre bei I/O Tasks relevant)
+
+Common Pool
+
+* Verhindert Engpässe durch zu viele Thread Pools
+* Parallelitätsgrad z.T. tiefer als #Prozessoren
+
+## Work Stealing
+
+![F91476C8-45F0-44FC-9436-C0E5987E7FC9](Bilder/F91476C8-45F0-44FC-9436-C0E5987E7FC9.png)
+
+Verteilte Queues für weniger Contention
+
+* Weniger Threads streiten um gleiche Locks
+* Viel effizienter
+
+FIFO
+
+* Globale Queue
+* Verteilen zwischen Queues
+
+LIFO
+
+* Neue Sub-Tasks kommen zuvorderst in lokale Task Queue
+* Grund für Schachtelung der fork/join
+
+## Asynchrone Programmierung
+
+Vielfach unnötig blockierende Methodenaufrufe. Idee: der Aufrufer soll während der Operation weiterarbeiten.
+
+### Futures
+
+Future repräsentiert ein zukünftiges Resultat.
+
+* Proxy auf Resultat das evtl. noch nicht bekannt ist, weil Berechnung noch läuft
+* Muss Ende der Berechnung abwarten, bevor Resultat zurückgegeben wird
+
+```java
+Future<T> future = threadPool.submit(...); // blockiert nicht, lanciert Task ohne zu warten
+// ...
+T result = future.get(); // blockiert, bis Task beendet ist
+```
+
+### Details
+
+Fehler-Propagierung: Task endet mit unbehandelter Exception:
+
+* `get()` liefert dann ExecutionException
+* Ursprüngliche Exception ist darin geschachtelt (Cause)
+
+Task Abbruch:
+
+* `cancel(boolean mayInterruptIfRunning)`
+* Task aus Warteschlange herausnehmen
+* Kooperativ: bricht laufenden Task nicht einfach ab
+* Optional: Interrupt auf Worker-Thread bei laufendem Task
+
+### Fire and Forget
+
+Tasks starten, ohne Resultat später abzuholen
+
+* Submitter interessiert sich nur für Resultat/Task-Ende
+
+Unbehandelte Exception in Task werden ignoriert!
+
+### Moderne Asynchronität (Java 8)
+
+Starte asynchrone Aufgabe in Standard Pool
+
+* ForkJoinPool.commonPool()
+
+```java
+CompletableFuture<Long> future =
+  CompletableFuture.supplyAsync(() -> longOperation()); // runAsync falls kein Rückgabetyp
+// other work
+process(future.get());
+```
+
+### Ende des asynchronen Aufrufs
+
+* Caller-zentrisch (Pull)
+  * Caller wartet auf Task-Ende und holt sich das Resultat
+* Callee-zentrisch (Push)
+  * asynchrone Operation informiert direkt über Resultat
+  * Completion Callback (Continuation, Promise)
+
+### Continuation
+
+Folgeaufgabe an asynchrone Aufgabe anhängen. Ausführung sobald vorgängier Task fertig ist
+
+```java
+CompletableFuture<Long> future = 
+  CompletableFuture.supplyAsync(() -> longOperation());
+// ...
+
+future.thenAccept(result -> System.out.println(result));
+```
+
+Ausführung der Continuation: durch beliebigen Thread
+
+* Initiator, wenn Future bereits Resultat hat
+* Beliebiger Worker Thread
+
+#### Continuation-Style Programming
+
+* `thenAccept()` für Handler ohne Rückgabe
+* `thenApply()` für Funktion mit Rückgabe
+
+Continuation läuft potentiell in anderem Thread => Synchronisation beachten
+
+```java
+future1.thenApply(future2).thenAccept(future3)
+```
+
+![EBED1E7A-9245-4ABC-B81B-FC19F6A0C058](Bilder/EBED1E7A-9245-4ABC-B81B-FC19F6A0C058.png)
+
+#### Multi-Continuation
+
+```java
+CompletableFuture.allOf(future1, future2).thenAccept(continuation);
+```
+
+![DF643E5D-016D-484F-8CA7-84F0C691556C](Bilder/DF643E5D-016D-484F-8CA7-84F0C691556C.png)
+
+```java
+CompletableFuture.any(future1, future2).thenAccept(continutation);
+```
+
+![72D49E5D-CCC5-483C-8AC1-942B64356B51](Bilder/72D49E5D-CCC5-483C-8AC1-942B64356B51.png)
