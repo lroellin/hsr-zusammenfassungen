@@ -62,8 +62,6 @@ typora-copy-images-to: ./Bilder
 
 https://refactoring.com/catalog/
 
-
-
 * Extract Method
   Code extrahieren und mit einem Methodennamen versehen; 
 * Inline Method
