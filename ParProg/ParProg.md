@@ -2753,3 +2753,259 @@ Vorgefertigte Lock-freie Datenstrukturen
 * `ConcurrentSkipListSet<V>`
 * `ConcurrentHashMap<K, V>`
 * `ConcurrentSkipListMap<K, V>`
+
+# Actor Model
+
+# Motivation
+
+Herkömmliche Programmiersprachen sind nicht für Nebenläufigkeit entworfen
+
+* Optimiert für sequentielle/prozedurale Ausführung
+* Nebenläufigkeit/Threads sind "Second Class" Features
+* Oder gar nicht vorhanden: JavaScript
+* By Default: Speicher nicht thread-safe
+
+Korrekte nebenläufige Programme zu schreiben ist daher besonders schwierig
+
+Threads operieren auf Modell von passiven Objekten
+
+Konsequenzen:
+
+* Beschränkter Grad an Nebenläufigkeit
+  * Concurrency sehr selektiv eingesetzt
+  * Maschinenorientierte Concurrency für Performance
+  * Viele unnötlg blockierende Aufrufe
+  * Resultat: no free lunch
+* Fehleranfälligkeit
+  * Race Conditions vorprogrammiert
+* Sehr schlecht verteilbar
+  * Shared Memory Modell
+  * Threads operieren auf gemeinsamem Speicher
+
+# Actor Modell und CSP
+
+Substantiell anderes Programmierkonzept
+
+* Aktive Objekte
+  * Objekte haben nebenläufiges Innenleben
+* Kommunikation
+  * Objekte senden und empfangen Nachrichten
+* Kein Shared Memory
+  * Nur Austausch von Nachrichten über Kanäle/Mailboxen
+
+## Actor-Modell
+
+Ein Actor kann
+
+* Neue Actors erstellen
+* Nachrichten an Actors (andere und sich selber) senden
+* Entscheiden, wie die nächste Nachricht behandelt werden soll (Zustandsänderung)
+
+## CSP (Communicating Sequential Processes)
+
+* Prozesse kommunizieren indirekt über Channels miteinander
+* Austausch der Nachrichten erfolgt unmittelbar und synchron
+* Inspirierte die Entwicklung von Go
+
+Prinzipiell gleiches Modell wie Actors
+
+* Unterschied: Actor hat keine Channels, Senden ist immer asynchron, keine garantierte Reihenfolge des Empfangs
+
+![FCB1BFB8-CF23-4158-9125-71AF1913F855](Bilder/FCB1BFB8-CF23-4158-9125-71AF1913F855.png)
+
+## Klassisch vs. CSP
+
+![064BAD9E-CCC0-4C14-9021-F929F0CB0D69](Bilder/064BAD9E-CCC0-4C14-9021-F929F0CB0D69.png)
+
+## Vorteile: Actor, CSP
+
+* Inhärente Nebenläufigkeit
+  * Alle Objekte (Actors) laufen nebenläufig
+  * Maschine kann Grad an Nebenläufigkeit ausnutzen
+* Keine Race Conditions
+  * Kein Shared Memory
+  * Nachrichtenaustausch synchronisiert implizit
+* Gute Verteilbarkeit
+  * Kein Shared Memory
+  * Nachrichtenaustausch für Netz prädestiniert
+
+# Akka
+
+Actor-Modell implementiert in Skala, zusätzliches Java API
+
+### Konzept
+
+* Actor sind aktive Objekte
+  * laufen konzeptionell nebenläufig zueinander
+* Privater Zustand
+  * aufpassen, dasss per Java Referenzen kein Shared State entsteht
+* Eine Mailbox pro Actor
+  * ein Buffer für alle Nachrichten, die zu ihm ankommen
+  * asynchrones Senden
+
+### Empfangsverhalten
+
+* Reaktion auf ankommende Nachricht
+  * Spezielle Behandlungs-Methode wird ausgeführt (ähnlich wie Event Queue bei GUIs)
+* Effekte per Behandlung
+  * ändere privaten Zustand
+  * Sende Nachrichten
+  * erzeuge neue Actors
+* Intern sequentiell
+  * nur eine Nachricht auf einmal bedienbar
+
+### Einfacher Akka-Actor
+
+Empfangsmethode: Run to Completion pro eingehende Nachricht
+
+```java
+public class NumberPrinter extends UntypedActor {
+  public void onReceive(final Object message) {
+    if (message instanceof Integer) {
+      System.out.print(message);
+    }
+  }
+}
+```
+
+### Erzeugen und Senden
+
+```java
+ActorSystem system = ActorSystem.create("System");
+ActorRef printer = system.actorOf(Props.create(NumberPrinter.class)); // Erzeugung per Reflection
+
+for (int i = 0; i < 100; i++) {
+  printer.tell(i, actorRef.noSender()) // einfaches, asynchrones Senden
+}
+
+system.shutdown(); // Gebe End-Signal an alle Actors
+```
+
+### Actor-Referenzen
+
+* `ActorRef` Adresse eines Actors
+  * Actor bei Fehlverhalten neu startbar (behält Adresse)
+* Entkopplung von "Interface" und Instanz
+  * Vorbereitet für Verteilung
+  * ActorRef ist immutable (in Message verschickbar)
+* Verhindert Methodenaufrufe/Variablenzugriffe
+  * Reiner Nachrichtenaustausch
+
+### Verteilte Actors-Client (Producer/Consumer)
+
+```java
+ActorSystem system = ActorSystem.create("producer");
+
+ActorSelection printer = system.actorSelection(
+	"appa.tcp://System@server:2552/user/printer");
+
+printer.tell(123, ActorRef.noSender());
+```
+
+### Actor Remoting	
+
+* Remote Lookup
+  * `system.actorSelection` mit URL
+* ActorSelection
+  * leichtgewichtiger als ActoRef
+  * kann 0..n Actors umfassen
+  * kann zu ActorRef aufgelöst werden
+* Remote erzeugen
+  * `system.actorOf(…)`
+  * `application.conf` spezifiziert wo Actor erstellt wird
+  * Keine Codeänderungen!
+
+### Actor Hierarchies
+
+* Hierarchie von Actors
+  * Passend zu URL-Adressierungsschema
+  * Supervision von Actors (später)
+  * Erzeuger ist Parent
+* ActorSelection
+  * Selektiert Teilbaum
+  * Broadcast möglich
+
+### Akka Sender
+
+`tell(msg, sender)`
+
+* Sender der Message wird mitgegeben
+* Nützlich bei Antwort an Sender
+* Typischerweise getSelf() bzw getSender() bei Forward
+
+Achtung: getSender zeigt immer auf den ursprünglichen Sender, auch beim Forwarding (wenn es mit dem entsprechenden Absender weitergeleitet wurde)
+
+### Akka Synchrones Senden
+
+Actor-Modell ist asynchron
+
+Synchrones Senden-Empfangen möglich mit Futures
+
+`Future<Object> resut = Patterns.ask(actorRef, msg, timeout);`
+
+### Akka Messages
+
+Serializable Classes
+
+Immutable (Value Objects)
+
+* Attribute final
+* Collections in `Collections.unmodifiableList` wrappen
+* keine Methoden die Seiteneffekte haben
+
+Typischerweise einfache Wrapper-Klassen mit Fokus auf die Attribute
+
+Messages sind viel Schreibaufwand, besser mit der Scala API
+
+### Akka Laufzeitsystem
+
+* Akka verwendet Dispatcher zur Ausführung
+* Typischerweise ein Java Fork-Join Thread Pool
+* Nicht ein Thread pro Actor!
+
+Bei synchronem Send & Receive Warteabhängigkeiten zwischen Actors
+
+* Thread Pool: keine Lösung (Deadlock bei fixer Anzahl)
+* Muss Stack pro Actor instanzieren
+* Thread pro Actor => sehr viele Threads
+
+Synchrones Send & Receive daher nicht empfohlen
+
+### Akka Supervision
+
+* Actors können andere Actors überwachen
+* Bei Exception wird der Supervisor benachrichtigt
+* Parents überwachen by default ihre Kinder
+
+Der Supervisor kann je nach Fehler reagieren. Achtung: Nicht für Programmierfehler, sondern nur für externe Ursachen (Netzwerk, Files), analog Exception vs. Error.
+
+| Resume   | Child macht weiter (behält internen Zustand) |
+| -------- | ---------------------------------------- |
+| Restart  | Child wird neu gestartet (verliert Zustand) |
+| Stop     | Child wird nicht mehr ausgeführt         |
+| Escalate | Supervisor gibt auf und meldet selber seinem Supervisor einen Fehler |
+
+Parent von `/user` ist der Root Guardian, zusätzlicher `/system` Actor für Logging und Shutdown
+
+### System Shutdown
+
+Applikation muss Actors selber stoppen
+
+```java
+getContext().stop(actorRef); // stoppt nach Bearbeitung der aktuellen Message (Massage)
+
+getContext().stop(getSelf()); // immer rekursiv (?)
+getContext().system().terminate();
+
+actor.tell(PoisonPill.getInstance(), sender); // stoppt bei Behandlung der Poison Pill
+victim.tell(Kill.getInstance(), sender); // startet Supervision Behandlung
+```
+
+### Schwächen
+
+* Protokoll der Actors nur implizit vorhanden
+  * Formales Protokoll fehlt
+  * Grundsätzliches Problem bei Actors im Gegensatz zur CSP
+* Akka: keine Typsicherheit
+* Akka: Diskrepanz JVM und Actor Model
+  * leicht verletzbare Regeln => Laufzeitfehler
