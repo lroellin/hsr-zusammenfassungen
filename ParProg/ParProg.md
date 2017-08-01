@@ -1726,3 +1726,412 @@ CompletableFuture.any(future1, future2).thenAccept(continutation);
 ```
 
 ![72D49E5D-CCC5-483C-8AC1-942B64356B51](Bilder/72D49E5D-CCC5-483C-8AC1-942B64356B51.png)
+
+# Task Parallel Library (TPL, .NET)
+
+## Threading in .NET
+
+Keine Vererbung: Delegate bei Konstruktor
+
+Exception in Thread => Abbruch des Programms
+
+```c#
+Thread myThread = new Thread(() => { 
+  for (int i = 0; i < 100; i++) {
+    Console.WriteLine("MyThread step {0}", i);
+  }
+});
+myThread.Start();
+// ...
+myThread.Join();
+```
+
+### Lambdas
+
+Syntax fast gleich wie in Java, aber Pfeil ist `=>` statt `->`.
+
+Lambdas können auf umgebende Variablen zugreifen, auch schreibend.
+
+```c#
+bool finished = false;
+Thread myThread = new Thread(() => {
+  // ...
+  finished = true; // prädestiniert für Data Races, sogar auf lokalen Variablen
+})
+```
+
+
+
+### Monitor in .NET
+
+```c#
+class BankAccount {
+  private decimal balance;
+  private object syncObject = new object(); // Monitor auf Hilfsobjekt als Best Practice
+  
+  public void Withdraw(decimal amount) {
+    lock(syncObject) { // analog zu synchronized
+      while (amount > balance) { // Schleife auch notwendig
+        Monitor.Wait(syncObject)
+      }
+      balance -= amount;
+    }
+  }
+  
+  public void Deposit(decimal amount) {
+    lock(syncObject) {
+      balance += amount;
+      Monitor.PulseAll(syncObject) // analog zu notifyAll()
+    }
+  }
+}
+```
+
+* FIFO-Warteschlange
+  * Pulse informiert längst Wartenden
+* Wait() in Schleife
+  * Kein Spurious Wakeup
+  * Gleiche Probleme des Überholens (Signal and Continue)
+* PulseAll() bei mehreren Bedingungen oder Erfüllungen mehrerer Threads
+* Synchronisation mit Hilfsobjekt als Best Practice
+  * Nicht zwingend, Gründe dafür und dagegen
+
+### Synchronisationsprimitiven
+
+* Fehlen
+  * kein Fairness Flag
+  * kein Lock & Condition
+* Zusätzlich
+  * ReadWriteLockSlim für Upgradeable Read/Write
+  * Semaphoren auch auf OS-Stufe
+  * Mutex (binärer Semaphor auf OS-Stufe)
+  * Spezielle Manual/AutoResetEvent
+* Collections nicht Thread-safe
+  * Ausser `System.Collections.Concurrent`
+
+## Task Parallel Library
+
+Work Stealing Thread Pool
+
+* Seit .NET 4 einer der modernsten Thread Pools
+* Verschiedene Abstraktionsstufen
+  * Task Parallelization: Explizite Tasks starten und warten
+  * Data Parallelization: parallele Statements und Queries
+  * Asynchrone Programmierung: mit Continuation Style
+
+## Task-Parallelisierung
+
+### Start And Wait
+
+```c#
+Task task = Task.Run(() => {
+  // task implementation
+});
+// perform other acticity
+task.Wait(); // blockiert bis Task beendet ist
+```
+
+### Task mit Rückgabe
+
+```c#
+Task<int> task = Task.Run(() => { // int = Rückgabetyp
+  int total = ...; // some calculation
+  return total;
+});
+// ...
+Console.Write(task.Result); // Blockiert bis Task Ende und liefert dann Resultat
+```
+
+### Typischer Fehler
+
+```c#
+for (int i = 0; i < 100; i++) {
+  Task.Run(() => {
+    // use i as input
+    Console.WriteLine("Working with " + i);
+  });
+}
+```
+
+Die Idee dahinter ist, 100 Tasks zu starten die dann jeweils "Working with 1/2/3/…" ausgeben. `i` ist aber sozusagen eine globale Variable. Nur schon bis der erste Task los läuft wird die Schleife bei 99 sein. Die Tasks geben alle den *aktuellen* Stand von `i` aus und nicht den Stand, mit dem sie begonnen wurden.
+
+### Geschachtelte Tasks
+
+Tasks können Sub-Tasks starten und/oder abwarten
+
+* kein spezieller ForkJoinTask nötig
+
+```c#
+Task.Run(() => {
+  // ...
+  Task<int> left = Task.Run(() => Count(leftPart));
+  Task<int> right = Task.Run(() => Count(rightPart));
+  int result = left.Result + right.Result;
+  // ...
+});
+```
+
+### Thread Injecton
+
+TPL fügt zur Laufzeit neue Worker Threads hinzu
+
+* Hill Climbing Algorithmus
+  * Misst Durchsatz und variiert Anzahl Worker Threads
+  * ±1 Thread => Durchsatz besser?
+* Kein Deadlock bei Task-Abhängigkeiten
+  * Aber ineffizient gemacht
+  * Deadlock mit `ThreadPool.SetMaxThreads()` möglich
+
+## Datenparallelität
+
+* Parallel Statements
+
+  * Unabhängige Statements, Beispiel:
+
+  * ```c#
+    void MergeSort(l, r) {
+      long m = (l + r) / 2;
+      
+      // kann man parallelisieren
+      MergeSort(l, m);
+      MergeSort(m, r);
+      
+      Merge(l, m, r);
+    }
+    ```
+
+* Parallel Loop
+
+  * Unabhängige Schleifen-Bodies, Beispiel:
+
+  * ```c#
+    void Convert(IList list) {
+
+      // kann man parallelisieren
+      foreach (File file in list) {
+      	Convert(file)
+      }
+      
+    }
+    ```
+
+### Parallele Statements
+
+Menge an Statements potentiell parallel ausführen
+
+* Als Tasks starten
+* Barriere der Tasks am Ende
+
+```c#
+Parallel.Invoke(
+  () => MergeSort(l, m);
+  () => MergeSort(m, r);
+);
+```
+
+![D124FE8A-7CA3-4ECC-82A2-AC66E76B76CA](Bilder/D124FE8A-7CA3-4ECC-82A2-AC66E76B76CA.png)
+
+### Parallele Loops
+
+Schlaufen-Bodies potentiell parallel ausführen
+
+* Gruppierung der Bodies in Tasks
+* Barriere dieser Tasks am Ende
+
+```c#
+Parallel.ForEach(list, 
+                file => Convert(file)
+);
+```
+
+![84C63F11-221B-40CD-9D75-8FAE56FBFD87](Bilder/84C63F11-221B-40CD-9D75-8FAE56FBFD87.png)
+
+### Parallel For
+
+```c#
+for (i = 0; i < array.Length; i++) {
+  DoComputation(array[i]);
+};
+
+// falls Iterationen unabhängig sind ==
+
+Parallel.For(0, array.Length, 
+            i => DoComputation(array[i])
+);
+```
+
+### Partitionierung
+
+Schleife mit vielen sehr kurzen Bodies
+
+Ineffizient: jede Iteration als parallelen Task ausführen
+
+TPL gruppiert automatisch mehrere Bodies zu Task
+
+![9A021298-7C06-484E-86CF-38116604CA0B](Bilder/9A021298-7C06-484E-86CF-38116604CA0B.png)
+
+Partitionierung bei Parallel Loops/Invoke: aufteilen gemäss verfügbarer Worker Threads
+
+![DE6F3201-86CA-4A66-B323-A4097562B414](Bilder/DE6F3201-86CA-4A66-B323-A4097562B414.png)
+
+### Explizite Partitionierung
+
+```c#
+Parallel.ForEach(Partitioner.Create(0, array.Length),
+	(range, _) => {
+		for (int i = range.Item1; i < range.Item2; i++) { // inklusive untere Grenze, exklusive obere Grenze
+          DoCalculation(array[i]);
+	}
+});
+```
+
+Vorteil: weniger viele Body-Delegates
+
+Nachteil: künstliche Unterschleife
+
+### Fehlerhafte parallele Aggregation
+
+```c#
+long totalWords = 0;
+Parallel.ForEach(list, file => {
+  totalWords += CountWords(file); // Race Condition
+});
+```
+
+Korrigieren mit Lock (atomare Instruktion wäre noch effizienter, wird später behandelt)
+
+```c#
+long totalWords = 0;
+Parallel.ForEach(list, file => {
+  int subTotal = CountWords(file);
+  lock(someLockObj) {
+    totalWords += subTotal;
+  }
+})
+```
+
+### Parallel LINQ (PLINQ)
+
+Parallelisierung von Language Integrated Query
+
+* LINQ: SQL-angelehnte Abfragesprache auf Objektmodell
+* Parallele Verarbeitung von Collection Operationen
+* Pendant zu Java 8 Stream API
+
+#### LINQ Beispiel mit Methoden
+
+ISBN von allen Büchern zum Titel Concurrency
+
+```c#
+bookCollection.
+  Where(book => book.Title.Contains("Concurrency")).
+  Select(book => book.ISBN)
+```
+
+Jede Zahl einer Liste auf `bool` abbilden (true $\iff$ Primzahl)
+
+```c#
+inputList.Select(number => isPrime(number))
+```
+
+#### Eingebettete C# LINQ Syntax
+
+```c#
+from book in bookCollection
+  where book.Title.Contains("Concurrency")
+  select book.ISBN
+  
+from number in inputList
+  select IsPrime(number)
+```
+
+#### Parallele LINQ Beispiele
+
+```c#
+from book in bookCollection.AsParallel()
+  where book.Title.Contains("Concurrency")
+  select book.ISBN // beliebige Reihenfolge
+  
+from number in inputList.AsParallel().AsOrdered() // Reihenfolge erhalten (Performance-Nachteil)
+  select IsPrime(number)
+```
+
+Bei der Java 8 Stream API muss man explizit unordered erlauben! Die Reihenfolge bleibt bei Liste ohne weiteres erhalten.
+
+#### Keine Seiteneffekte
+
+LINQ ist durch funktionales/deskriptives Programmierparadigma inspiriert
+
+* müsste eigentlich frei von Seiteneffekten sein
+
+Sind aber leider per Kriterium (where, select) möglich
+
+* beliebige verzahnte/parallele Ausführung
+* Race Conditions, Deadlocks etc. möglich
+
+#### PLINQ: Verarbeitung der Resultate
+
+PLINQ auswerten und fortlaufend Resultate verarbeiten (Pipeline)
+
+```c#
+ParallelQuery<Book> query =
+  from book in bookCollection.AsParallel()
+  where book.Title.Contains("Concurrency")
+  select book;
+
+query.ForAll(b => {
+  if (Interesting (b)) { // PLINQ nebenläufig zur Iteration auswerten
+    Read(b); 
+  }
+});
+```
+
+## Asynchrone Programmierung mit TPL
+
+Task in TPL lancieren
+
+```c#
+var task = Task.Run(
+	// LongOperation
+);
+// perform other work
+int result = task.Result; // Zugriff ähnlich wie mit Future
+```
+
+### Task Continuations
+
+Definiere Task, der automatisch nach dem Ende eines anderen startet
+
+* Wie Java CompletableFutures
+
+```c#
+task1.
+  ContinueWith(task2).
+  ContinueWith(task3)
+```
+
+### Multi-Continuation
+
+(Modell analog zu Java)
+
+```c#
+Task.WhenAll(task1, task2).
+  ContinueWith(continuation);
+
+Task.WhenAny(task1, task2).
+  ContinueWith(continuation);
+```
+
+### Asynchronität in C#
+
+Sprachkonstrukte für asynchrone Ausführung
+
+```c#
+public async Task<int> LongOperationAsync() { ... }
+// ...
+Task<int> task = LongOperationAsync();
+// other work
+int result = await task; // erwarte Ende von async Methodenaufruf
+// continue
+```
+
