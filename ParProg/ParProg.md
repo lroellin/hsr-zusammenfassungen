@@ -2135,3 +2135,621 @@ int result = await task; // erwarte Ende von async Methodenaufruf
 // continue
 ```
 
+# GUI und Threading/async await
+
+## GUI und Threading
+
+GUI Frameworks erlauben nur Single Threading.
+
+* nur spezieller UI Thread darf auf UI-Komponenten zugreifen
+  * Loop zur Ausführung der Ereignisse aus einer Queue
+
+Wieso? Locking in allen Komponenten relativ teuer, und es gibt ein Deadlock-Risiko bei zyklischen, geschachtelten Aufrufen wie beim MVC Pattern
+
+## Java UI Thread
+
+Auch Event Dispatching Thread (EDT) genannt
+
+* Arbeitet Event Queue ab
+  * Events beschreiben Neuzeichnen, Knopfdruck, etc.
+  * Run to Completion pro Event-Behandlung
+* Führt folgenden Ereignis-Code aus
+  * Registrierte Listeners in GUI-Komponenten
+  * `paint()` und `update()` Methoden (überschreibbar)
+
+## Implikationen
+
+Keine langen Operationen in UI Events
+
+* Blockiert sonst UI
+* Betrifft Listener, `paint()`, `update`
+
+Kein Zugriff auf UI Elemente durch fremde Threads
+
+* Sonst Race Condition
+* In AWT/Swing eventuell unentdeckt
+* In SWT, Android & .NET Exception
+
+## Swing/AWT und Multi-Threading
+
+Swing ist nicht Thread-safe
+
+* keine saubere Behandlung wenn anderer Thread auf UI-Komponenten zugreift
+
+Thread Confinement
+
+* nur UI-Thread darf auf UI-Komponenten zugreifen
+* andere Threads dürfen nicht direkt zugreifen, sondern UI Operationen müssen als Events in die UI Event Queue eingereiht werden
+
+### Dispatching an UI Thread
+
+Komponentenzugriffe an UI Thread delegieren
+
+* als Aufgabe in Event Queue einreihen
+* UI Thread führt die Aufgabe später aus
+
+Benutzung der Klasse `SwingUtilities`
+
+* `static void invokeLater(Runnable doRun)`
+  * asynchron
+* `static void invokeAndWait(Runnable doRun)`
+  * synchron
+
+```java
+button.addActionListener(event -> {
+  new Thread(() -> {
+    String text = readHugeFile(); 
+    SwingUtilities.invokeLater(() -> {
+      textArea.setText(text);
+    });
+  }).start();
+});
+```
+
+![63CE6311-08AB-4F09-8337-357DB3B182E8](Bilder/63CE6311-08AB-4F09-8337-357DB3B182E8.png)
+
+### Sauberer Swing GUI Setup
+
+```java
+public static void main(String args[]) { 
+  final JFrame frame = new JFrame("My Frame"); 
+  JButton button = new JButton(); 
+  button.setText("Click"); 
+  frame.getContentPane().add(button, ...); 
+  frame.setSize(200, 100);
+  // ...
+  SwingUtilities.invokeLater(() -> {
+      frame.pack();
+      frame.setVisible(true);
+  });
+}
+```
+
+### Swing Background Worker
+
+Hilfsklasse für Hintergrund-Arbeiten
+
+* Zeitaufwendige Operationen als Task in Thread Pool: `doInBackground()`
+* UI-Zugriffe durch EventDispatchThread: `done()`
+
+Beispiel:
+
+```java
+class BackgroundCalculator extends SwingWorker<Integer, Void> { 
+  // Integer = Resultat von Background, void = keine Zwischenresultate
+  
+  @Override
+  public Integer doInBackground() { // separater Thread
+    return longComputation();
+  }
+  
+  @Override
+  protected void done() { // UI Thread
+    try {
+      Integer result = get(); // Resultat von doInBackground()
+      label.setText("Result: " + result);
+    } catch( InterruptedException | ExecutionException e) {
+      //...
+    }
+  }
+  // ...
+}
+
+new BackgroundCalculator().execute();
+```
+
+## Andere Java GUI Frameworks
+
+* SWT
+  * Pendant zu SwingUtilities: `widget.getDisplay().asyncExec(Runnable)`
+* Android
+  * Dispatch-Möglichkeiten
+    * `post(Runnable)` auf UI-Komponente aufrufen
+    * `AsyncTask` implementieren und benutzen
+    * `Activity.runOnUiThread(Runnable)`
+
+## .NET UI Threading Modell
+
+Gleiches Prinzip wie in Java
+
+UI Thread
+
+* Aufruf von Application.Run()
+* Bei WPF implizit der Main Thread
+* oder modales Show
+
+UI Event Dispatching
+
+* WPF: control.Dispatcher.BeginInvoke(delegate)
+* WinForm: control.BeginInvoke(delegate)
+* BeginInvoke ist asynchron, Invoke synchron
+
+Nicht blockierendes WPF (unleserlich)
+
+![49A247D9-A7A5-40AE-9854-155BC3D61553](Bilder/49A247D9-A7A5-40AE-9854-155BC3D61553.png)
+
+## C# async await
+
+## Nicht-blockierende UIs
+
+Klassisch: Zerstückelung der Logik
+
+* Kette von Dispatch (UI Thread/fremder Thread)
+* Hilfsklasse BackgroundWorker
+
+Leserlicher Code mit C# async/await
+
+* Logik in einem Guss (eine Methode)
+* Zerstückelung in mehrere UI-Events hinter Kulissen
+
+## Asynchronität mit Async/Await
+
+```c#
+public async Task<int> LongOperationAsync() { ... }
+  
+Task<int> task = LongOperationAsync();
+OtherWork();
+int result = await task; // warte auf Beendigung
+```
+
+Schlüsselwort `async` für Methode
+
+* Aufrufer ist nicht zwingend während der gesamten Ausführung der async Methode blockiert
+
+Schlüsselwort `await` für Tasks
+
+* Warte auf Ende eines TPL Tasks
+* Liefert Resultat des Tasks, falls mit Rückgabe
+
+## Async Rückgabetypen
+
+* `void` fire and forget
+* `Task` Keine Rückgabe, erlaubt Warten auf Ende
+* `Task<T>` für Methide mit Rückgabetyp T
+* keine `ref` oder `out`-Parameter
+
+## Async-Methode (Beispiel)
+
+```c#
+async Task<string> ConcatWebSitesAsync(string url1, string url2) { 
+  HttpClient client = new HttpClient();
+  Task<string> download1 = client.GetStringAsync(url1);
+  // ^ async Task<string> GetStringAsync(string url)
+  Task<string> download2 = client.GetStringAsync(url2);
+  string site1 = await download1; 
+  string site2 = await download2; 
+  return site1 + site2;
+}
+```
+
+## Spezielle Regeln
+
+* async Methode
+  * muss await enthalten
+* await Anweisung
+  * nur in async Methode erlaubt
+
+Grund: spezielles Ausführungsmodell
+
+## Ausführungsmodell
+
+Async-Methode läuft teilweise synchron, teilweise asynchron
+
+* Aufrufer führt Methode solange synchron aus, bis ein blockierendes await anliegt
+* Danach läuft die Methode asynchron
+
+![75F54BB6-08C7-46A6-BA37-D7D5E8E0CC00](Bilder/75F54BB6-08C7-46A6-BA37-D7D5E8E0CC00.png)
+
+### Mechanismus
+
+Compiler zerlegt Methode in Abschnitte
+
+* Erster Abschnitt vor Await: synchron durch Aufrufer
+* Abschnitt nach Await: läuft später nach Task-Ende (Continuation)
+
+### Methodenaufruf
+
+* Methode läuft synchron bis zu blockierendem Await
+* Bei blockierendem Await Rücksprung zum Aufrufer
+
+![0CBAF996-2236-42B3-9CEF-7D753FDAF972](Bilder/0CBAF996-2236-42B3-9CEF-7D753FDAF972.png)
+
+### Verschiedene Ausführungen
+
+* Fall 1: Aufrufer ist ein normaler Thread
+  * Meiste Threads: Console, TPL, etc.
+  * Abschnitt wird durch Thread des erwarteten Tasks ausgeführt
+  * ![E6799167-5CD8-40CA-A63D-B7F35707CB4F](Bilder/E6799167-5CD8-40CA-A63D-B7F35707CB4F.png)
+* Fall 2: Aufrufer ist ein UI-Thread
+  * Abschnitt wird an UI dispatched
+  * Wird als Event vom UI-Thread ausgeführt
+  * ![277BE1DE-DA19-47A5-95AB-26436863B221](Bilder/277BE1DE-DA19-47A5-95AB-26436863B221.png)
+
+
+
+## Async/Await Sequenz
+
+```c#
+async void startDownload_Click(...) { 
+  HttpClient client = new HttpClient(); 
+  foreach (var url in collection) {
+    var data = await client.GetStringAsync(url); 
+    textArea.Content += data;
+  }
+}
+```
+
+![D8140A98-BD56-4A66-95DC-A383900CB135](Bilder/D8140A98-BD56-4A66-95DC-A383900CB135.png)
+
+## Nicht automatisch asynchron
+
+Wenn man in einer async-Methode eine normale Operation aufruft, läuft sie synchron und man erhält eine Compiler-Warnung (!). Workaround: teure Operation explizit als Task ausführen
+
+```c#
+public async Task<bool> IsPrimeAsync(long number) {
+  return await Task.Run(() => {
+    for (long i = 2; i <= Math.Sqrt(number); i++) {
+      if (number % i == 0) { return false; }
+    }
+    return true;
+  });
+}
+```
+
+## Besonderheit
+
+Thread-Wechsel innerhalb Methodenaufruf möglich (beim Fall 1)
+
+Partielle Nebenläufigkeit beachten!
+
+## Design-Kritik
+
+* Eine Async-Methode => zwei Aufruffälle
+* Viraler Effekt: async/await Aufrufer wird auch async
+  * Unnötig komplete Methodensignaturen mit Tasks
+  * Kosten wegen interner Methodenzerstückelung
+* Synchrone/asynchrone Verwendung sollte meist orthogonal sein
+  * Caller sollte entscheiden, nicht Callee
+
+## Empfehlung
+
+Primär im UI Layer sinnvoll
+
+* Muss aber Zerstückelungs-Mechanismus verinnerlichen
+* Sowieso meist Top-Layer in Architektur
+
+In darunterliegenden Layer weniger
+
+* Problematisch, wenn Methoden ad-hoc async werden
+* Nebenläufigkeit/Verzahnung kommt ins Spiel
+* Aufrufer kann sowieso leicht zu asynchron wechseln (Task.Run)
+
+# Memory Models
+
+## Lock-freie Programmierung
+
+* Korrekte nebenläufige Interaktionen ohne Locks
+* Garantien des Speichermodell nutzen
+
+Einstiegsbeispiel:
+
+![C4AAE602-0FFE-4326-BAD3-040758CD2605](Bilder/C4AAE602-0FFE-4326-BAD3-040758CD2605.png)
+
+(Also: man setzt x = y = 0; DANN lässt man zwei Threads loslaufen)
+
+### Ursachen für Probleme
+
+* Weak Consistency
+  * Speicherzugriffe werden in verschiedenen Reihenfolgen auf verschiedenen Threads gesehen
+  * Ausnahme: Synchronisation/Speicherbarrieren
+* Optimierungen
+  * Compiler, Laufzeitsystem und CPUs
+  * Instruktionen werden umgeordnet, wegoptimiert
+
+Keine sequentielle Konsistenz bei Nebenläufigkeit!
+
+Die CPU darf Instruktionen eines Threads umordnen, sofern sie erkennt dass sie nicht voneinander abhängen. Wenn ein zweiter Thread davon abhängig ist in welcher Reihenfolge das geschieht, ist das der CPU egal. Im Beispiel oben darf der Thread 2 auch "umgekehrt" ablaufen.
+
+## Memory Model
+
+### Java
+
+Minimale spezifizierte Garantien
+
+* Atomicity (Unteilbarkeit)
+* Visibility (Sichtbarkeit)
+* Ordering (Reihenfolge)
+
+### Atomicity
+
+Garantien:
+
+Zugriff auf Variable Lesen/schreiben ist atomar für
+
+* Primitive Datentypen bis 32 Bit
+* Objekt-Referenzen
+* long und double nur mit `volatile` Keyword atomar
+
+Achtung: Unteilbarkeit heisst nicht Sichtbarkeit
+
+* Nach Write sieht ein anderer Thread evtl. noch anderen Wert
+* Es heisst nur: immer gültigen Wert; entweder alten oder neuen
+
+Atomar oder nicht?
+
+TODO: genauer analysieren
+
+![DC998850-FB5F-47DF-A831-B8401522C8AA](Bilder/DC998850-FB5F-47DF-A831-B8401522C8AA.png)
+
+### Visibility
+
+Analysebeispiel
+
+```java
+class Worker extends Thread {
+  private boolean doRun = true;
+  
+  public void run() {
+    while (doRun) {
+      ...
+    }
+  }
+  
+  public void stopRequest() {
+    doRun = false;
+  }
+}
+```
+
+Problem:
+
+Sehe Änderungen eines anderen Threads eventuell nicht oder viel später
+
+Optimierung, z.B. VM hält Variablenwert in Register
+
+```
+void run() {
+  load doRun to reg1;
+  while(reg1) {
+    ... (Endlosschleife)
+  }
+}
+```
+
+Garantien: Die Sichtbarkeit ist garantiert bei
+
+* Locks Release & Acquire
+  * Änderungen vor Release werden bei Acquire sichtbar
+* Volatile Variable
+  * Zugriff macht Änderungen anderer Zugreifer sichtbar
+* Initialisierung von final Variablen
+  * Nach Ende des Konstruktors
+* Thread-Start und Join
+  * ebenso Task Start und Ende
+
+### Sichtbarkeit mit volatile in Java
+
+Alle Änderungen vor dem volatile Zugriff werden für jeden sichtbar der danach auf dieselbe volatile-Variable zugreift (damit würde man das Problem oben lösen). **Nur so in Java, anders in .NET und C/C++**!
+
+Wo ist die Sichtbarkeit von x == 1 garantiert?
+
+![811359D9-0FEC-48C5-9C8C-B0EDCD45F44B](Bilder/811359D9-0FEC-48C5-9C8C-B0EDCD45F44B.png)
+
+### Java Volatile Keyword
+
+* Atomicity
+  * Atomares Lesen und Schreiben auch für long und double
+  * Achtung: andere Operationen sind nicht atomar (z.B. `i++`)
+* Visibility
+  * Änderungen werden anderen Zugreifern propagiert
+  * Achtung: kein Sperren im Gegensatz zu Locks
+* Reordering
+  * Keine Umordnung durch Compiler/Laufzeitsystem/CPU
+  * Achtung: nicht volatile Variablen werden evtl. umgeordnet
+
+Volatile verhindert Data Race auf Variable
+
+### Ordering
+
+Java Garantien:
+
+* Innerhalb eines Threads: "As-if-Serial" Semantik
+  * Sequentielles Verhalten innerhalb eines Threads bleibt
+* Zwischen Threads: Reihenfolge nur erhalten für
+  * Synchronisationsbefehle
+  * Zugriffe auf volatile Variablen
+* Keine Umordnung über Synchronisation oder volatile Zugriffe hinweg
+  * Memory Barriers / Memory Fences
+
+Welche Umordnungen sind möglich?
+
+![7A8EF8E5-06A0-465A-9A7E-B280A2A65D86](Bilder/7A8EF8E5-06A0-465A-9A7E-B280A2A65D86.png)
+
+### .NET
+
+Unterschied zu Java Memory Model
+
+* Atomarität: long/double nicht mit volatile atomar
+* Visibility nicht definiert. Implizit durch Ordering
+* Ordering: volatile ist nur partielle Fence
+
+Atomare Instruktionen
+
+* `Interlocked` Klasse
+
+### .NET Volatile Read/Write Fences
+
+* Volatile Read: Acquire Semantik
+  * bleibt vor den nachfolgenden Zugriffen
+* Volatile Write: Release Semantik
+  * bleibt nach den vorherigen Zugriffen
+
+![922A1CFA-CBA1-4DE2-A624-228A76D112AD](Bilder/922A1CFA-CBA1-4DE2-A624-228A76D112AD.png)
+
+### .NET Full Fence
+
+Umordnung in beide Richtungen verbieten: `Thread.MemoryBarrier();`
+
+## Atomare Operationen
+
+* Kein Blockieren oder Warten auf Locks
+* Komplexer als nur atomares Lesen und Schreiben
+* Java Atomic Variables
+* Effizient: atomare Instruktionen des Prozessors
+* Garantiert auch Visibility und Ordering
+
+### Eigener Spin-Lock-Yield
+
+Idee: wenn es nicht geht, `yield`en wir
+
+```java
+public class SpinLock {
+  private volatile boolean locked = false;
+  
+  public void acquire() {
+    
+    // Block müsste atomar sein
+    while(locked) {
+      Thread.yield();
+    }
+    locked = true;
+    
+  }
+  
+  public void release() {
+    locked = false;
+  }
+}
+```
+
+Mit atomarer Operation
+
+```java
+public class SpinLock {
+  private AtomicBoolean boolean locked = new AtomicBoolean(false)
+  
+  public void acquire() {
+    while(locked.getAndSet(true)) { 
+      // ^ lese alten Werte und setze neuen Wert atomar Rückgabe = gelesener Wert
+      Thread.yield();
+    }
+  }
+  
+  public void release() {
+    locked.set(false);
+  }
+}
+```
+
+Das Ganze ist etwas tricky zu verstehen:
+
+Angenommen, das Lock sei zu (locked = true) und man macht acquire(), dann wird
+
+1. das Lock auf true gesetzt (bleibt true)
+2. Ge-yield()-et (man macht also nichts)
+
+Angenommen, das Lock sei offen (locked = false) und man macht acquire(), dann wird
+
+1. Das Lock auf True gesetzt (es ist jetzt zu)
+2. nicht ge-yield-et, man macht also weiter
+
+### Atomares Compare and Set
+
+`boolean CompareAndSet(boolean expect, boolean update)`
+
+* Setzt `update` wenn alter Wert gleich `expect` ist (atomar)
+* Retourniert `true` bei erfolgeichem Update
+
+Atomar geschieht das folgende:
+
+```java
+if (current == expect) {
+  current = update;
+  return true;
+} else {
+  return false;
+}
+```
+
+### Atomic Klassen
+
+Klassen für Boolean, Integer, Long und Referenzen (auch für Array-Elemente)
+
+Diverse atomare Operatoren
+
+* addAndGet(), getAndAdd(), etc.
+
+* Ab Java 8 sogar mit Lambda
+
+* ```java
+  AtomicInteger counter = new AtomicInteger(0);
+  counter.updateAndGet( x -> x + 1);
+  ```
+
+### Optimistische Synchronisation
+
+```java
+do {
+  oldValue = var.get(); // lese aktuellen Wert
+  newValue = calculateChanges(oldValue);
+} while (!var.compareAndSet(oldValue, newValue))
+  // ^ schreibe, falls gelesener Wert immer noch aktuell ist
+```
+
+Hier kommen wir allerdings zum ABA-Problem
+
+### ABA-Problem
+
+Anderer Thread schreibt unbemerkt dazwischen
+
+![747C4D63-98D9-4A39-A7CB-3B3B41765B06](Bilder/747C4D63-98D9-4A39-A7CB-3B3B41765B06.png)
+
+## Lock-freie Datenstrukturen
+
+Lock-Free Stack
+
+```java
+AtomicReference<Node<T>> top = new AtomicReference<>();
+...
+  
+void push(T value) {
+  Node<T> newNode = new Node<>(value);
+  Node<T> current;
+  do {
+    current = top.get();
+    newNode.setNext(current);
+  } while (!top.compareAndSet(current, newNode));
+}
+```
+
+
+
+![C967D903-1F84-49DC-B56D-9E89A645F34D](Bilder/C967D903-1F84-49DC-B56D-9E89A645F34D.png)
+
+Vorgefertigte Lock-freie Datenstrukturen
+
+* `ConcurrentLinkedQueue<V>`
+* `ConcurrentLinkedDeque<V>`
+* `ConcurrentSkipListSet<V>`
+* `ConcurrentHashMap<K, V>`
+* `ConcurrentSkipListMap<K, V>`
