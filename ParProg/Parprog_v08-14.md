@@ -975,3 +975,441 @@ for (int k = 0; k < K; k++) {
 C[i, j] = sum;
 ```
 
+## Kernel: erste Versuche
+
+```c
+__global__
+  void multiply(float *A, float *B, float *C) {
+  int i = blockIdx.x * blockDim.x + threadIdx.x;
+  int j = blockIdx.y * blockDim.y + threadIdx.y;
+  float sum = 0;
+  for (int k = 0; k < K; k++) {
+    sum += A[i * K + k] * B[k * M + j]; 
+  }
+  C[i * M + j] = sum;
+}
+```
+
+`A[i * K + k] + B[k * M + j]` ist äquivalent zu `A[i, k] * B[k, j]`
+
+`C[i * M + j]` äquivalent zu `C[i, j]`
+
+Bei diesem Kernel fehlt aber noch die Randbehandlung
+
+```c
+__global__
+  void multiply(float *A, float *B, float *C) {
+  int i = blockIdx.x * blockDim.x + threadIdx.x;
+  int j = blockIdx.y * blockDim.y + threadIdx.y;
+  if (i < N && j < M) {
+    float sum = 0;
+    for (int k = 0; k < K; k++) {
+      sum += A[i * K + k] * B[k * M + j]; 
+    }
+    C[i * M + j] = sum;
+  }
+}
+```
+
+## Hohe Speicherkosten
+
+Global Memory ist relativ teuer
+
+Threads lesen wiederholt selbe Elemente von A & B
+
+![5413C022-53BE-43A0-9157-829C2FD8CE1D](Bilder/5413C022-53BE-43A0-9157-829C2FD8CE1D.png)
+
+## CUDA Speicherstufen
+
+![83E60D64-7ED7-4901-89ED-D5D05FCA0C39](Bilder/83E60D64-7ED7-4901-89ED-D5D05FCA0C39.png)
+
+(vereinfachtes Speichermodell)
+
+* Shared Memory
+  * Per Streaming Multiprozessor
+  * Schnell
+  * Nur zwischen Threads innerhalb Block sichtbar
+  * Paar KB
+  * `__shared__ float x;`
+* Global Memory
+  * Main Memory in GPU Device
+  * Langsam
+  * Für alle Threads sichtbar
+  * Mehrere GB
+  * `cudaMalloc()`
+
+Achtung: Shared Memory hängt auf dem Streaming Multiprocessor. Ein Streaming Multiprocessor hat mehrere Blöcke (man sieht den also nicht direkt; Streaming Processor sind dann die Threads).
+
+Wieso ist das Shared Memory nur zwischen Threads innerhalb Block sichtbar?
+
+Man kann nicht garantieren, dass zwei Blöcke auf demselben Streaming Multiprocessor sind. Somit kann es sein, dass man zwischen Blocks dasselbe Shared Memory hat, aber das wäre Zufall.
+
+## Tiled Matrix Multiplikation
+
+![DD6FCB71-94AF-4C57-BDFE-2DCBC325D48D](Bilder/DD6FCB71-94AF-4C57-BDFE-2DCBC325D48D.png)
+
+Begrenztes Shared Memory
+
+![5653A469-0189-4156-8877-43D7B5A00F22](Bilder/5653A469-0189-4156-8877-43D7B5A00F22.png)
+
+## Gerüst des Algorithmus
+
+```c
+float sum = 0.0;
+for (int tile = 0; tile < nofTiles; tile++) {
+  // Tile von A und B in Shared Memory lesen
+  // Jeder Thread liest ein Element von jedem Tile
+  __syncthreads();
+  // Multipliziere Zeile von A-Tile mit
+  // Spalte von B-Tile aus dem Shared Memory
+  sum += partialProduct;
+  __syncthreads();
+}
+C[row * M + col] = sum;
+```
+
+## CUDA Barriere
+
+`__syncthreads()`
+
+* synchronisiert alle Threads *innerhalb eines Blocks*
+* Keine Synchronisation zwischen Blöcken
+
+![B41CC495-7414-43B8-9112-1D941915B99F](Bilder/B41CC495-7414-43B8-9112-1D941915B99F.png)
+
+Jedes `__syncthreads` Statement ist andere Barriere
+
+* in if-else nur erlaubt, falls alle Threads eines Blocks entweder nur oder nur else-Branch pro Runde wählen
+* Sonst undefiniert
+
+![AB91ED62-7A84-4E58-B184-6934D846EE02](Bilder/AB91ED62-7A84-4E58-B184-6934D846EE02.png)
+
+## Erweiterung mit Shared Memory
+
+* Deklaration mit Keyword `__shared__`
+* Statische Array-Grösse notwendig
+  * begrenzter Speicher (z.B. 48KB)
+* Mehrdimensionalität bei statischer Grösse erlaubt
+
+```c
+
+__shared__ float Asub[TILE_SIZE][TILE_SIZE];
+__shared__ float Bsub[TILE_SIZE][TILE_SIZE];
+
+int tx = threadIdx.x, ty = threadIdx.y;
+int col = blockIdx.x * TILE_SIZE + tx;
+int row = blockIdx.y * TILE_SIZE + ty;
+
+for (int tile = 0; tile < nofTiles; tile++) {
+  Asub[ty][tx] = A[row * K + tile * TILE_SIZE + tx];
+  Bsub[ty][tx] = B[(tile * TILE_SIZE + ty) * M + col];
+  __syncthreads();
+  for (int ksub = 0; ksub < TILE_SIZE; ksub++) {
+    sum += Asub[ty][ksub] * Bsub[ksub][tx];
+  }
+  __syncthreads();
+}
+C[row * M + col] = sum;
+```
+
+Es fehlen (wahrscheinlich) noch die Memory Guards, damit ich nicht über fremdes Memory schreibe
+
+## Warp
+
+Ein Block wird intern in Warps zerlegt (zu je 32 Threads) <== fixe Grösse?
+
+* Alle Threads in Warp führen gleiche Instruktion aus
+  * SIMD: gleiche Instruktion auf verschiedenen Daten
+  * Verzweiungen werden abwechselnd ausgeführt (später)
+* Stream Multiprozessor kann alle Warps eines Blocks beherbergen
+  * aber nur wenige laufen gleichzeitig echt parallel (1 bis 24)
+
+## Abbildung auf Prozessoren
+
+* Ein Block läuft immer in einem Streaming Multiprozessor (SM)
+  * Ein SM kann eventuell mehrere Blöcke beherbergen
+* Ein Warp läuft (falls aktiv) auf den Stream Prozessoren (SPs) eines einzigen SM
+  * Deswegen SIMD
+* Latenzverringerung: falls ein Warp auf Speicher wartet, führt nächsten Warp aus
+  * Analog zu Hyperthreading Modell
+
+## Divergenz
+
+Unterschiedliche Verzweigungen im selben Warp
+
+* SM führt Instruktionen der einen Verzweigung durch
+  * die anderen Threads müssen warten
+* Dann wieder der anderen Verzweigung
+  * die einen Threads müssen warten
+
+Idee: innerhalb eines Warps machen immer alle dasselbe
+
+![7BAA0F93-1002-49B8-B56C-E9AF58032E18](Bilder/7BAA0F93-1002-49B8-B56C-E9AF58032E18.png)
+
+## Memory Coalescing
+
+Zugriffsmuster der Threads sind entscheidend für Performance
+
+Falls Threads auf aufeinanderfolgen zugreifen => in einer Transaktion (Memory Burst) erledigt
+
+Sonst viele einzelne, teure Zugriffe
+
+![F8FF5EEC-6C18-49BF-ABDF-435D807E0FDE](Bilder/F8FF5EEC-6C18-49BF-ABDF-435D807E0FDE.png)
+
+Threads in Warp müssen Zugriffe auf alle Elemente einer Burst Section erledigen
+
+Auch Coalescing:
+
+![EE5B4ABB-E295-4DCE-B93A-A18741C40095](Bilder/EE5B4ABB-E295-4DCE-B93A-A18741C40095.png)
+
+Kein Coalescing
+
+![D7A66190-C62B-4562-A0D2-02ED657296B5](Bilder/D7A66190-C62B-4562-A0D2-02ED657296B5.png)
+
+## Coalescing in Anwendungen
+
+Zugriffe möglichst wie folgt umdesignen:
+
+`data[(Ausdruck ohne threadIdX.x) + threadIdx.x]`
+
+# Cluster-Parallelisierung
+
+Möglichst hohe parallele Beschleunigung
+
+* Faktor 100 und mehr
+
+General Purpose
+
+* Viele CPU Cores statt nur viele GPU Cores
+* Kombination auch möglich
+
+## Ausführungsmodell
+
+HPC Job
+
+* Zusammengehörige Ausführung im Cluster
+* Vom Client lanciert
+* Besteht aus einem oder mehreren Tasks
+
+HPC Task
+
+* Ausführung eines Executable
+* Operiert auf Files in File Share des Clusters
+* Abhängigkeiten zwischen Tasks definierbar
+
+Ziel: ein Programm auf mehreren Nodes ausführen
+
+## Verteiltes Programmiermodell
+
+Programm auf mehreren Nodes ausführen
+
+* Kein Shared Memory (NUMA) zwischen Nodes
+* Shared Memory (SMP) für Cores innerhalb Node
+
+Actor Model/CSP für beide Modelle geeignet
+
+* Egal ob auf gleichen oder entferntem System
+* Nachrichtenaustausch zwischen Prozessen
+
+## Message Passing Interface (MPI)
+
+Verteiltes Programmiermodell
+
+* Basiert auf Actor/CSP-Prinzip
+* Übliche Wahl für heterogene Parallelisierung
+
+Industrie-Standard einer Library
+
+## Erstes Programm
+
+```c
+#include <stdio.h>
+#include "mpi.h"
+int main(int argc, char* argv[]){
+  MPI_Init(&argc, &argv); // Initialisierung
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank); // Prozess Identifikation
+  printf("MPI process %i", rank);
+  MPI_Finalize(); // FInalisierung
+  return 0; 
+}
+```
+
+Alternative in .NET
+
+```c#
+using MPI; 
+using System;
+
+class Program {
+  public static void Main(string[] args) {
+    using (new MPI.Environment(ref args)) {
+      int rank = Communicator.world.Rank; Console.WriteLine("MPI process {0} ", rank);
+    }
+  } 
+}
+```
+
+## Programmausführung
+
+`mpiexec -n 16 FirstMpiProgram.exe`, `n` Prozessinstanzen
+
+![350B25A8-7DD1-4F2B-8E10-9AFE21D91DC3](Bilder/350B25A8-7DD1-4F2B-8E10-9AFE21D91DC3.png)
+
+## Single Program Multiple Data
+
+MPI Programm wird in mehreren Prozessen gestartet
+
+* Jeder Prozess hat seine Identifikation (Rank)
+* Prozesse arbeiten unabhängig in ihrem Adressraum
+* Alle Prozesse starten und terminieren synchron
+
+Prozesse können untereinander kommunizieren
+
+* Senden und Empfangen von Nachrichten
+* Synchronisation mit Barrieren
+
+##  Communicator
+
+Gruppe von MPI-Prozessen
+
+* Erlaubt Kommunikation zwischen Prozessen
+
+`Communicator.world`
+
+* Alle Prozesse einer MPI-Programmausführung
+* Eigene Gruppen definierbar
+
+## Prozess-Identifikation
+
+Rank = Nummer innerhalb einer Gruppe
+
+Eindeutige Identifikation = (Rank, Communicator)
+
+* `Communicator.world.Rank` Prozess-Nummer
+* `Communicator.world.Size` Gesamtanzahl der Prozesse
+
+## Direkte Kommunikation
+
+`world.Send(value, receiverRank, messageTag)`
+
+`world.Receive(senderRank, messageTag, out value)`
+
+`world` = Communicator.world
+
+`messageTag`: frei wählbare Nummer für Nachrichtenart (>= 0)
+
+## Beispiel: Senden und Empfangen
+
+```c#
+
+var world = Communicator.world; int rank = world.Rank;
+int size = world.Size;
+int tag = 1;
+if (rank == 0) {
+  int value = new Random().Next(); 
+  for (int to = 1; to < size; to++) {
+    world.Send(value, to, tag);
+  }
+} else {
+  int value;
+  world.Receive(0, tag, out value);
+  Console.WriteLine("{0} received by {1}", value, rank);
+}
+```
+
+![3C84CE5A-39F5-4CD2-BCCF-82D2F40C1CD3](Bilder/3C84CE5A-39F5-4CD2-BCCF-82D2F40C1CD3.png)
+
+## Barriere
+
+`Communicator.world.Barrier()`
+
+Warte, dass alle Prozesse Barriere erreichen (`.Barrier()` aufrufen)
+
+## Reduktion
+
+Aggregation von Teilresultaten zwischen Prozessen
+
+`world.AllReduce(value, (a, b) => a + b)`
+
+![5F97652F-DBB1-4E30-875A-33229A0E9A59](Bilder/5F97652F-DBB1-4E30-875A-33229A0E9A59.png)
+
+### Funktionen
+
+`T Allreduce(T Value, Op<T>)`
+
+* beliebige Aggregationsoperation, z.B. als Lambda
+* Default-Initialwerte für T, z.B. 0 bei int
+* Jeder erhält das Gesamtresultat als Rückgabewert
+* Implizite Barriere/Broadcast über alle Prozesse
+
+`T Reduce(T value, Op<T>, int rank)`
+
+* Nur ein Prozess (rank) sieht das Gesamtresultat
+* Effizienter als Allreduce, kein Broadcast
+
+## Monte Carlo Pi Simulation
+
+Randomisierte Berechnung von Pi
+
+* Generiere zufällige Punkte aus Fläche
+* Schaue, ob sie im Einheitskreis liegen
+* Trefferrate gibt eine Annäherung an Pi
+
+
+$$
+\frac{\pi}{4}=\frac{Hits}{Points}
+$$
+
+### Sequentieller Algorithmus
+
+```c#
+long CountHits(long trials) {
+  long hits = 0;
+  Random random = new Random();
+  for (long i = 0; i < trials; i++) {
+    double x = random.NextDouble(); double y = random.NextDouble();
+    if (x * x + y * y <= 1) { hits++; }
+  }
+  return hits; 
+}
+
+long hits = CountHits(Trials);
+double pi = 4 * ((double)hits / Trials);
+```
+
+### MPI Parallelisierung
+
+```c#
+int rank = world.Rank;
+int size = world.Size;
+
+long hits = CountHits(Trials/size); // jeder Prozess rechnet Bruchteil
+long totalHits = world.Reduce(hits, (a, b) => a + b, 0); // Prozess 0 erhält Gesamtwert
+if (rank == 0) {
+  double pi = 4 * ((double)totalHits / Trials);
+  ...
+}
+```
+
+## Blockierende Sends
+
+Sends sind allenfalls blockierend
+
+* D.h. wartet, dass Gegenseite empfängt
+
+Bei Kreis => Deadlock
+
+* Alle wollen senden, niemand empfängt
+
+Lösung: nicht blockierendes Senden
+
+```c#
+var request = Communicator.world.ImmediateSend(text, right, 0); Communicator.world.Receive(left, 0, out text);
+request.Wait();
+```
+
+# Reactive Programming
+
+![E1200FD9-B8D1-4081-9A3A-F1CD3E55D64C](Bilder/E1200FD9-B8D1-4081-9A3A-F1CD3E55D64C.png)
+
