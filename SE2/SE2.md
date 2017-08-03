@@ -621,5 +621,281 @@ Beispiel Use Case: An der Kasse bezahlen
 
 Aus diesen User Stories leitet man dann Arbeitspakete ab. Und da sich sehr viele Menschen auf Sprintlänge 2 oder 3 Wochen geeinigt haben, ist diese durchschnittliche Grösse sehr oft ähnlich.
 
-> Arbeitspakete im Sprint Backlog haben eine Grösse von durchschnittlich 2-4 Arbeitstagen
+> Arbeitspakete im Sprint Backlog haben eine Grösse von durchschnittlich 2-4 Arbeitstage
 
+# Mehr als Unit Testing (Testen in grösseren Projekten)
+
+Zu testender Code
+
+```java
+public static String floatWithTwoDigits(float f) {
+  return String.format("%6.2f", f);
+}
+```
+
+## Externe Systeme
+
+File-Synchronisation via FTP. Mocken? eher nicht, besser einen Linux-Laptop hinstellen und Testszenarien durchspielen
+
+Börsenwerte? Ja, die kann man gut mocken.
+
+## Integrationstest
+
+Unit Tests "auf den oberen Etagen" bis direkt unterhalb UI
+
+![EDE24282-6A61-4317-AA3D-02AACF280754](Bilder/EDE24282-6A61-4317-AA3D-02AACF280754.png)
+
+Bis hinunter zur Datenbank, dort müssen dann zuerst die richtigen Testdaten eingeschoben werden
+
+Von oben herab: Integrationstests
+
+Wenn man direkt unter dem UI testet, testet man die API seines Programms.
+
+Von unten: Microtests
+
+## Vorteile/Nachteile
+
+* Integrationstests testen realistischere Szenarios, entdecken mehr Fehler
+* Sie können allerdings hohe Laufzeiten zur Folge haben
+
+## Microtesting
+
+Problem: wenn man die Schrauben und die Räder geprüft hat, muss das Ganze Auto noch nicht funktionieren.
+
+Man wird dazu verleitet, das Refactoring nicht durchzuführen weil man dann alle Unit Tests neu schreiben müsste.
+
+## Testabdeckung
+
+* Anweisungabsdeckung (Statement Coverage)
+  * Zähler an jeder Anweisung
+* Zweigabdeckung (Branch Coverage)
+  * Jeder Zweig, welcher durch die Unit Tests ausgeführt wird zählt
+  * Abweichung zu Anweisungsabdeckung
+    * If ohne else mit Testfall, wo das IF grad *ganz* ausgelassen wird
+    * For und while Testfälle, bei denen man garnicht in die Schleife geht
+* Bedingungsabdeckung (Decision Coverage)
+  * Das Verhältnis von ausgewerteten atomaren Werten zu allen vorhandenen atomaren Werten
+  * Kann hilfreich sein, Testdaten mit Äquivalenzklassen selektieren
+* Pfadabdeckung (Path Coverage)
+  * Das Verhältnis der getesteten Pfade zu allen möglichen Pfaden in einem Modul
+  * Führt sehr schnell zu einer potentiell unendlichen Anzahl von Fällen (wegen Schleifen)
+
+![F251A011-D6D4-49BE-8879-EDA7CD3FECC1](Bilder/F251A011-D6D4-49BE-8879-EDA7CD3FECC1.png)
+
+Auf den folgenden Folien wird eigentlich nur eines beschrieben: "Habe ich genug getestet?" ist eine sehr schwierigie Frage. Sie lässt sich definitiv nicht nur mit einer Kennzahl beantworten.
+
+> eine hohe Testabdeckung ist eine notwendige, aber nicht hinreichende Bedingung
+
+# Aufwandsschätzungen
+
+Der Kommunikationsaufwand ist nicht linear; O(n^2^)
+
+Nicht lineares
+
+* Communication
+* Planning
+* Management
+* Requirements development
+* System functional design
+* Interface design and specification
+* Architecture
+* Integration
+* Defect removal
+* System testing
+* Document production
+
+=> Keep it small
+
+Warum stimmt das Schätzen nicht?
+
+Politische Vorgaben dominieren, nicht realistische
+
+Hauptgrund: mangelnde Erfahrung.
+
+> Schätzen ist Erfahrungssache
+
+## Algorithmische Modelle - COCOMO
+
+KDSI: K delivered source instructions (1000 Zeilen Code)
+
+Person-Months (PM)
+$$
+PM = 3.2 * (KDSI) ^{1.05}
+$$
+Development Time:
+$$
+2.5 * (PM)^{0.38}
+$$
+
+## Function Points
+
+Zählen:
+
+* external inputs (data entry screens)
+  * Gewicht 4
+* external interface files (file-based inputs or outputs, in the case of XML, each data object type would count as a separate interface file)
+  * Gewicht 7
+* external outputs (reports)
+  * Gewicht 5
+* external queries (message or external function)
+  * Gewicht 4
+* logical internal tables (tables in the database assuming 3rd NF)
+  * Gewicht 10
+
+System mit 25 Eingabemasken, 5 interface files, 15 Reports, 10 externalqueries, 20 DB-Tabellen
+
+$$25*4 + 5*7 + 15*5 + 10*4 + 20*10 = 450 Function Points$$
+
+Nachschauen in Formeln & Tabellen (für ein e-commerce System): total 82 Personen-Monate.
+
+## LOC
+
+> 100 - 1000 ausgelieferte Zeilen Code / Person & Monat
+
+Wenn man keine anderen Erfahrungswerte hat, dann 400 DLOC annehmen (pro Monat und Entwickler)
+
+# Metriken
+
+## Zyklomatische Zahl
+
+* 1-10: simple, without much risk
+* 11-20: more complex, moderate risk
+* 21-50: complex, high risk program
+* greater than 50: untestable program (very high risk)
+
+Misst Komplexität der logischen Struktur
+
+Basis Kontrollflussgraph G eines programms
+
+Zyklomatische Zahl (Anzahl linear unabhängiger Pfade durch Programm)
+
+$$V(G) = e -n + 2p$$
+
+* e = Anzahl Kanten (edges)
+* n = Anzahl Knoten (nodes)
+* p = Anzahl Komponenten (unabhängige Teil-Graphen)
+
+Für einzelne Funktion/Methode:
+
+$$V(G) = Anzahl Verzweigungen + 1$$
+
+Verzweigungen: while, if, case, ...
+
+![CACB018B-9863-4E4B-BD6C-4178B9E86353](Bilder/CACB018B-9863-4E4B-BD6C-4178B9E86353.png)
+
+## Kontrollflussgraph
+
+* für jede Anweisung einen Knoten (rund oder oval)
+* Ist er eine Anweisung mit Bedingung, hat er zwei Ausgänge
+  * Bedingung wahr
+  * Bedingung falsch
+* Unbedingte Anweisung
+  * direkt zur nächsten Anweisung
+  * bei letzter Anweisung einer Schleife der Schleifenkopf
+
+![ADFE2792-3634-4078-B42B-EF5E98C016A2](Bilder/ADFE2792-3634-4078-B42B-EF5E98C016A2.png)
+
+![62A27A28-0BEE-4B0A-B20C-3EB79783265C](Bilder/62A27A28-0BEE-4B0A-B20C-3EB79783265C.png)
+
+Faustregel: V(G) einer Funktion/Methode > 10: genauer anschauen, ob zu vereinfachen
+
+## Lack of Cohesion of Method (LCOM*)
+
+Achtung:
+
+Semantik wird nicht berücksichtigt
+
+getter und setter verschlechtern LCOM
+
+$$LCOM^* = \frac{(m - Mittelwert(m(A)) )}{m-1} $$
+
+* m = Anzahl Methoden
+* m(A) = Anzahl Methiden die auf ein Attribut zugreifen
+* Mittelwert (m(A)) über alle Attribute
+
+Jede Methode greift nur auf ein Attribut zu: LCOM* = 1 => schlechte Kohäsion
+
+Jede Methode greift auf jedes Attribut zu: LCOM* = 0 => maximale Kohäsion
+
+## Instability
+
+![4341868F-7BFA-4CF5-BA48-6440CC71D611](Bilder/4341868F-7BFA-4CF5-BA48-6440CC71D611.png)
+
+Instability eines Packages
+
+$$I = \frac{C_e}{C_a + C_e}$$
+
+![EB283DCC-C1D0-467E-98F9-BFFCB41A3808](Bilder/EB283DCC-C1D0-467E-98F9-BFFCB41A3808.png)
+
+## Abstractness A
+
+$$A=\frac{Anzahl AbstrakterKlassen}{AnzahlKlassenEinesPackages}$$
+
+## Normalized Distance from Main Sequence
+
+$$D_n= |A + I -1|$$
+
+D~n~ sollte möglichst gering sein bei gutem Package Design
+
+## Interpretationssache
+
+Metriken müssen immer von einer Fachperson beurteilt werden, nicht von einem Manager selbst
+
+> Benutzen Sie nie irgendeine Projekt- oder Produkt-Metrik in einem Anreiz-/Belohnungssystem. Nie.
+
+## Rudin
+
+## Number of ...
+
+* Number of Children (NSC)
+  * Anzahl direkter Unterklassen einer Klasse
+  * (oder die das Interface implementieren, falls Interface)
+* Number of Overriden Methods (NORM)
+  * Totale Anzahl der überschriebenen Methoden in ausgewähltem Bereich
+* Number of Classes (NOC)
+* Number of Interfaces (NOI)
+* Number of Methods (NOM)
+* Number of Fields (NOF)
+
+## Depth of Inheritance (DIT)
+
+Distanz der Klasse zur Klasse Object in Vererbungshierarchie
+
+## LOC
+
+* TLOC: Total Lines of Code
+  * Nur nicht leere Zeilen
+  * Zählt aber { und }
+  * Zählt keine Kommentarteilen
+  * Oft auch KLOC (1000)
+* MLOC: Method Lines of Code
+
+## Specialization Index
+
+Auf Klassenebene
+
+Mittelwert von $$\frac{NORM * DIT}{NOM}$$
+
+## McCabe Cyclomatic Complexity (CC)
+
+Siehe vorherige Vorlesung
+
+## Weighted Methods per Class (WMC)
+
+Summe CC für alle Methoden in Klassen
+
+## Lack of Cohesion of Methods (LCOM*)
+
+Siehe vorherige Vorlesung
+
+# Code Reviews
+
+Immer zwischen Peers aus der eigenen Abteilung
+
+Gründe für Reviews:
+
+1. Frühe Fehlerentdeckung
+2. Team verbessert sich
+3. Know-How über Architektur verbreitet sich
+
+Reviews sind kosteneffizient!
