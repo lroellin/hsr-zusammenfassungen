@@ -51,7 +51,7 @@ Mit dem Kontextwechsel bezeichnet man den Wechsel zu einem anderen Thread. Es gi
 
 **Kooperativ:** Die Threads müssen explizit Kontextwechsel synchron initiieren. Der Scheduler kann einen laufenden Thread nicht unterbrechen
 
-**Preemptiv:** Der Scheduler kann per Timer-Interrupt den laufenden Thread asynchron unterbrechen. Zum Beispiel mit Time-Sliced Scheduling: jeder Thread besitzt den Prozessor für einen maximalen Zeitintervall. Heutzutage wird in der Regel nur preemptiv gearbeitet.
+**Preemptiv:** Der Scheduler kann per Timer-Interrupt den laufenden Thread asynchron unterbrechen. 
 
 # JVM Threads
 
@@ -292,8 +292,6 @@ Die Schlaufe und die Zuweisung sind aber nicht atomar! Es kann zu folgendem Szen
 
 >  Die korrekte Implementierung ist nicht trivial!
 
-Es gibt Algorithmen wie Dekker, Peterson, Lamport's Bakery, sowie atomare Compare-and-Set Instruktionen.
-
 Sie muss auch Weak Memory Consistency beachten. Man braucht Memory Fences (z.B. `volatile` Keyword)
 
 Ein Busy Waiting ist zu teuer für lange Wartezeiten oder 1 CPU; Warteschlagen sind zu teuer für sehr kurzes Warten bei Multi-CPU
@@ -407,13 +405,9 @@ public class Test {
   synchronied void f() {...} // Object Lock
   static synchronized void g() {...} // Class Lock
 }
-```
 
-$$
-\iff
-$$
-
-```java
+===
+  
 public class Test {
   void f() {
     synchronized(this) {...} // Object Lock
@@ -529,6 +523,7 @@ Beim Beispiel stellen sich zwei Fragen:
   * wenn ich aufgeweckt werde, bedeutet es nicht dass nun genügend Geld vorhanden ist
   * entweder wurde immer noch zuwenig Geld eingezahlt
   * oder ein anderer Thread der aufgeweckt wurde hat das Geld bereits wieder abgebucht, so dass es nun wieder zu tief ist
+  * oder sogar ein Thread der von aussen kam und nie schlafen musste, hat das Geld bereits wieder abgebucht
 
 Für den Moment kennen wir nur pauschales Wait & Signal. Ich muss selber schauen, ob nach dem Signal die Bedingung nun erfüllt ist.
 
@@ -717,7 +712,7 @@ Mehr als eine Ressource anfordern und freigeen
 ### Diskussion
 
 * Sehr mächtig
-* ber relativ low-level
+* aber relativ low-level
   * beim Buffer wollen wir ineffiziente `notifyAll` vermeiden
   * Signalisierung spezifischer Bedingungen gewünscht
     * nicht leer
@@ -784,7 +779,7 @@ class BoundedBuffer<T> {
 
 ## Read-Write Lock
 
-Gegenseitiger Ausschluss ist unnötig strenf für rein lesende Abschnitte
+Gegenseitiger Ausschluss ist unnötig streng für rein lesende Abschnitte
 
 * Erlaube parallele Lese-Zugriffe (Reader)
 * Gegenseitiger Ausschluss bei Schreib-Zugriffen (Writer)
@@ -822,15 +817,13 @@ rwLock.readLock().unlock();
 
 Das wird aber nicht funktionieren. Es darf ja bei einem Readlock kein Writelock geben. Somit wird der innere Lock nie gegeben.
 
-Die richtige Variante ist, von Anfang an Write-Locks zu verwenden wenn man in einem Abschnitt schreiben muss
+Die richtige Variante ist, von Anfang an Write-Locks zu verwenden wenn man in einem Abschnitt schreiben muss. In C# gibt es dafür upgradable Read Locks.
 
 ### Read-Write Lock mit Conditions
 
 Nur auf Write-Lock möglich! Sonst Exception
 
 ## Zeitliche Synchronisationsprimitiven (folgende)
-
-Bisher hatten wir Synchronisationsprimitiven zum *Schutz von Shared-Ressourcen bei Multi-Threading*. Es gibt aber noch Synchronisationsprimitiven zum zeitlichen Synchronisieren von mehreren Threads
 
 ### Beispiel Autorennen:
 
@@ -1608,6 +1601,10 @@ Common Pool
 
 ## Work Stealing
 
+Es gibt eine globale Queue. Die Worker Threads holen sich immer ein paar Tasks auf einmal. Dazu locken sie die globale Queue nur einmal statt gleich mehrmals.
+
+Wenn nun ein Worker Thread seine lokale Queue fertig hat, schaut der in der globalen Queue nach neuer Arbeit. Findet er auch dort nichts, schaut er bei seinen "Kollegen" Worker Threads, ob diese noch Tasks in der Queue haben (diese sind dann noch nicht begonnen). Diese kann er dann dem anderen "stehlen" und selbst ausführen.
+
 ![F91476C8-45F0-44FC-9436-C0E5987E7FC9](Bilder/F91476C8-45F0-44FC-9436-C0E5987E7FC9.png)
 
 Verteilte Queues für weniger Contention
@@ -1882,6 +1879,7 @@ TPL fügt zur Laufzeit neue Worker Threads hinzu
   * ±1 Thread => Durchsatz besser?
 * Kein Deadlock bei Task-Abhängigkeiten
   * Aber ineffizient gemacht
+    * Die TPL merkt, dass der Durchsatz einbricht und macht neue Threads. Nun misst sie erneut, und macht vielleicht nochmal welche. Da sie das Problem nicht erkennt, macht sie nur Symptombehandlung
   * Deadlock mit `ThreadPool.SetMaxThreads()` möglich
 
 ## Datenparallelität

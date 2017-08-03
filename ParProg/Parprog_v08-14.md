@@ -1411,5 +1411,410 @@ request.Wait();
 
 # Reactive Programming
 
+Deskriptiv (ähnlich wie LINQ)
+
 ![E1200FD9-B8D1-4081-9A3A-F1CD3E55D64C](Bilder/E1200FD9-B8D1-4081-9A3A-F1CD3E55D64C.png)
 
+LINQ hat einen Pull-Mechanismus. Wenn Daten gebraucht werden, werden sie lazy angefordert. Die Input-Quelle ist passiv; der Input muss vollständig vorliegen.
+
+Dieser Mechanismus funktioniert nicht, falls
+
+* Input sukzessive mit Pausen ankommt
+* Länge des Streams unbekannt bzw. unendlich ist
+
+=> Push Modell (aka Reactive)
+
+## Reactive Programming
+
+* Inputs und Arbeitsschritte sind aktiv
+  * Lösen pro Wert ein Ereignis aus (OnNext)
+* Nachfolgeschritt abonniert Events des Vorgängers
+
+## Rx.NET
+
+Asynchrone Events + LINQ
+
+* Inputs können asynchron als Events ankommen
+* Verarbeitungsschritte als LINQ beschreibbar
+* Outputs sind asynchrone Events (idea für GUI)
+
+Zwischenschritte haben zwei Rollen (Interfaces)
+
+* Observer des Vorgängers
+* Observable des Nachfolgers
+
+Das Ganze nennt man dann ein `Subject<T>` (oder Promise)
+
+Einfaches Beispiel:
+
+```c#
+var subject = new Subject<string>();
+
+// Observer ruft auf
+subject.Subscribe(Console.WriteLine);
+
+// Observable ruft auf
+subject.OnNext("A");
+subject.OnNext("B");
+subject.OnNext("C");
+subject.OnCompleted();
+```
+
+Observer kann beliebig viele Werte erhalten
+
+Ende der Sequenz
+
+* Erfolgreich mit OnCompleted()
+* Fehlerhaft mit OnError()
+
+Nach dem Ende ignorieren Subjects weitere Aufrufe
+
+## Ad-Hoc Observer Erzeugung
+
+```c#
+subject.Subscribe(
+  DelegateForOnNext,
+  DelegateForOnError, // Optional
+  DelegateForOnCompleted // Optional
+);
+
+subject.Subscribe(
+  value => Console.WriteLine("{0} received", value),
+  exception => Console.WriteLine("{0} thrown", exception),
+  () => Console.WriteLine("completed")
+);
+```
+
+## Buffer-Varianten
+
+| Subject         | Observer erhält zukünftige Werte    | Kein Buffer  |
+| --------------- | ----------------------------------- | ------------ |
+| ReplaySubject   | Observer erhällt alle letzten Werte | Unbeschränkt |
+| BehaviorSubject | Schickt letzten Wert und zukünftige | Ein Element  |
+| AsyncSubject    | Schickt letzten bei OnCompleted     | Ein Element  |
+
+## Collections zu Observable
+
+Passive Enumerable zu aktiven Observable umwandeln:
+
+`salesEurope.ToObservable()`
+
+## Observables kombinieren
+
+```c#
+var combinedSales = 
+  salesEurope.ToObservable().
+  Merge(salesAsia.ToObservable()).
+  Merge(salesAmerica.ToObservable());
+
+combinedSales.Subscribe(Console.WriteLine);
+```
+
+![BC5F8727-4ED5-4AED-830C-EF0E54528EC1](Bilder/BC5F8727-4ED5-4AED-830C-EF0E54528EC1.png)
+
+## Rx und Concurrency
+
+* Default: alles sequentiell
+  * asynchron
+* Concurrency einfach einstellbar
+  * Scheduler mit `ObserveOn()` angeben
+
+`observable.ObserveOn(TaskPoolScheduler.Default).Subscribe(...)`
+
+## Parallele Verarbeitung mit TPL
+
+```c#
+var sales1 = salesEurope.ToObservable().
+  ObserveOn(TaskPoolScheduler.Default);
+var sales2 = salesAsia.ToObservable().
+  ObserveOn(TaskPoolScheduler.Default);
+var sales3 = salesAmerica.ToObservable().
+  ObserveOn(TaskPoolScheduler.Default);
+
+var combinedSales =
+  sales1.Merge(sales2).Merge(sales3);
+
+combinedSales.Subscibe(Console.WriteLine);
+```
+
+![2094FD8F-5642-4E30-B24E-95BB4CC0685A](Bilder/2094FD8F-5642-4E30-B24E-95BB4CC0685A.png)
+
+## Andere Scheduler
+
+* Default
+  * synchrone Ausführung (gleicher Thread)
+* `TaskPoolScheduler.Default`
+  * Parallele Ausführung in TPL
+* `NewThreadScheduler.Default`
+  * Alle Aufrufe dieses Observable in neuen Thread
+* `DispatcherScheduler.Current`
+  * GUI Thread
+
+## GUI
+
+Ausführung auf GUI Thread
+
+```c#
+combinedSales.ObserveOnDispatcher().Subscribe( entry =>
+    textBlock.Text += entry.Article + " " + entry.Volume
+);
+```
+
+## Rx mit LINQ
+
+```c#
+var sales =
+  from entry in
+    salesEurope.ToObservable().
+    Merge(salesAsia.ToObservable()).
+    Merge(salesAmerica.ToObservable())
+  group
+  	entry by entry.Article into category
+  let
+  	sum = category.Sum(e => e.Volume) // sum ist Observable (kein Skalar)
+  select
+  	new { category.Key, sum };
+```
+
+![7EA20382-70E2-47FE-A8CC-9CFB3EF19D51](Bilder/7EA20382-70E2-47FE-A8CC-9CFB3EF19D51.png)
+
+## Vorgefertigte Observables
+
+* `Observable.Return("Value")` liefert den Wert, dann Completed
+
+* `Observable.Empty()` liefert sofort Completed
+
+* `Observable.Never()` liefert nie etwas (auch nicht Completed)
+
+* `Observable.Throw(exception)` liefert sofort Error
+
+* `Observable.Range(-10, 20)` 
+
+* ```c#
+  Observable.Generate(
+    0,
+    value => value < 100,
+    value => value + 2,
+    value => value
+  )
+  // 0, 2, 4, ..., 98  
+  ```
+
+* `source.Take(10)` nächste 10 Werte von` source`, dann Completed
+
+* `Observable.Interval(TimeSpan.FromMilliseconds(250))` 0, 1, 2 im Intervall von 250ms
+
+* `Observable.Timer(Timespam.FromDays(1))` liefert 0 erst in einem Tag
+
+* `source.Delay(Timespam.FromSeconds(1))` verzögert alle werte von `source` einmal um 1 Sekunde
+
+## Events zu Observables
+
+Event Quellen zu Observables umwandeln
+
+```c#
+Observable.FromEventPattern <MouseButtonEventHandler, MouseButtonEventArgs>( 
+  h => window.MouseDown += h,
+  h => window.MouseDown -= h
+);
+```
+
+## Hot & Cold
+
+Hot = aktiv; notifizieren spontan auch ohne registrierte Observers
+
+Cold = passiv; notifizieren on request, erst bei Anmeldung von Observers
+
+# Software Transactional Memory (STM)
+
+Idee aus Datenbanksystem
+
+Ziele: keine Races, keine Deadlocks (keine Starvation)
+
+## Software Transactions
+
+Atomare Sequenz von Operationen
+
+Konzeptionell wie eine grosse atomare Instruktion
+
+keine inkonsistenten Zwischenstände bemerkbar
+
+## ACI Transaktionen
+
+* Atomicity
+  * Vollständig oder gar nicht sichtbar
+* Consistency
+  * Programm vor und nach Transaktion gültig
+* Isolation
+  * Effekte wie eine serielle Ausführung
+* Gegensatz zu DB
+  * keine Durability/Persistenz
+
+## Konzept
+
+Deskriptiv. Was ist atomar, nicht wie
+
+Automatische Isolation
+
+* überlasse korrekte Ausführung dem System
+
+Einschränkungen
+
+* nur Speicherzugriffe sind isoliert, Seiteneffekte nicht
+
+Implementierung
+
+* meist optimistisches Concurrency Control
+
+## STM versus Locking
+
+![46A64669-450E-4B68-9E54-2B4D64623BA7](Bilder/46A64669-450E-4B68-9E54-2B4D64623BA7.png)
+
+Mit STM kann man auch Nested Transactions richtig machen (`withdraw` und `deposit`)
+
+Es gibt keine Gefahr von Deadlocks
+
+Im Fehlerfall ist das Geld drauf oder eben nicht, aber nicht verloren
+
+## Transaktionsausführung
+
+Optimistisches Concurrency Control (OCC)
+
+* unsynchronisiert ausführen
+* bei Konflikten => Rollback durch System
+
+Transaktionen könenn unerwartet abbrechen
+
+* Automatischer Retry, sollte für Anwendung unbemerkbar sein
+
+## Typische Probleme
+
+Seiteneffekte bleiben sichtbar
+
+Starvation-Gefahr bei OCC
+
+* Transaktion unter Umständen wiederholt wegen Konflikt abbrechbar
+
+## Warten auf Bedingungen
+
+* Retry innerhalb Transaktion
+  * Transaktion ausdrücklich abbrechen
+  * Automatische Wiederholung später
+* System Monitoring
+  * Wiederholung erst, wenn Zustandsänderung
+
+## Nested
+
+Commit erst bei Top Level Transaktion
+
+## Baldiger Abbruch
+
+Bei Konflikten: Transaktion direkt abbrechen
+
+## Hardware Support
+
+Intel Transactional Synchronisation Extensions (TSX), unterstützt sogar nested Transactions
+
+Kann vom Framework genutzt werden
+
+Aber mit Bug in Haswell, es ist anscheinend nicht so einfach
+
+## STM auf Java
+
+Scala STM
+
+## Wrapping von Variablen
+
+Keine normalen Variablenzugriffe in Transaktionen, sonst sind sie nicht transaktionell. 
+
+Ausnahme: lokale Variablen und Parameter
+
+```java
+final Ref.View<Integer> balance = STM.newRef(0);
+final Ref.View<LocalDate> lastUpdate = STM.newRef(LocalDate.now());
+```
+
+## Transaktion
+
+```java
+import scala.concurrent.stm.japi.STM;
+void deposit(int amount) {
+  STM.atomic(() -> {
+    balance.set(balance.get() + amount);
+    lastUpdate.set(LocalDate.now());
+  });
+}
+```
+
+## Retry
+
+```java
+void withdraw(int amount) {
+  STM.atomic(() -> {
+    if (balance.get() < amount) {
+      STM.retry();
+    }
+    balance.set(balance.get() - amount);
+    lastUpdate.set(LocalDate.now());
+  });
+}
+```
+
+## Nested Transactions
+
+```java
+void transfer(BankAccount from, BankAccount to, int amount) {
+  STM.atomic(() -> {
+    from.withdraw(amount);
+    to.deposit(amount);
+  });
+}
+```
+
+## Exceptions
+
+Rollback und Abbrechen mit Exception, kein Retry
+
+```java
+void deposit(int amount) {
+  STM.atomic(() -> {
+    if (balance.get() >= Limit) {
+      throw new RuntimeException("Balance limit");
+    }
+    balance.set(balance.get() - amount);
+    lastUpdate.set(LocalDate.now());
+  }
+}
+```
+
+## Zugriffe in Transaktionen
+
+Nur Zugriffe via Wrapper: `Ref.View<T>`; T muss immutable sein
+
+Indirekte Strukturen sind nicht transaktionell (Collections)
+
+Vordefinierte transaktionelle Collections
+
+* `STM.newMap()`
+* `STM.newSet()`
+* `STM.newArrayAsList()` fixed size list
+* Normale List fehlt
+
+## Keine Seiteneffekte
+
+* Kein IO, auch kein Thread Start/Wait/Join
+
+Spezifisch: keine normalen Variablen
+
+* nur lesen von final oder lokalen Variablen
+* Sonst nur Zugriffe via Wrapper
+* oder Transactional Collections
+
+## Transaktionstheorie
+
+* Jede serielle Ausführung der Transaktion ist korrekt
+* Nebenläufige Ausführung auch korrekt, sofern die Effekte gleich sind wie irgendeine serielle Ausführung
+
+=> Serialisierbarkeit
+
+Write Skew und Starvation-Probleme (nicht verstanden, S. 30-32)
