@@ -899,3 +899,76 @@ Gründe für Reviews:
 3. Know-How über Architektur verbreitet sich
 
 Reviews sind kosteneffizient!
+
+# Performance-Messungen
+
+1. Get it to run (Sunny Case)
+2. Get it right (robust, fehlerfrei)
+3. Make it fast (erst jetzt Performance)
+
+Erst messen, dann optimieren
+
+Problem mit Testdaten: NICHT random, sondern zum Beispiel populäre Artikel viel häufiger
+
+## Application Telemetry
+
+Viele Daten speichern
+
+# Usability Testing
+
+Nicht vorbelastete Nutzer!
+
+> Die Software wird getestet, nicht Sie!
+
+offene Aufgaben geben
+
+nicht
+
+* helfen
+* führen
+
+nur
+
+* beobachten
+
+"Wo würden Sie als nächstes klicken?"
+
+Fürs Mitmachen danken
+
+Wireframes zeigen die Funktionalität, was man machen kann
+
+Mockups zeigen, wie es aussehen wird (graphisches Design)
+
+# Proving Programs Correct
+
+> Program testing can be quite effective for showing the presence of bugs, but it is hopelessly inadequate for showing their absence
+
+Frage: sind alle möglichen Fälle durch unsere Test Cases gut abgedeckt?
+
+## Hoare Triples
+
+$$\{P\}C \{Q\} $$
+
+* P = Precondition
+* C = Command/Program
+* Q = Postcondition
+
+> If a program `C` is executed from an initial state satisfying the precondition `P`, the final state after C terminates, satifies the postcondition `Q`.
+
+Beispiel:
+
+```
+{x = a ^ y = b}
+t:=x;
+x:=y;
+y:=t
+{x = b ^ y = a
+```
+
+## Weakest Precondition Style Proof
+
+1. Start with the required postcondition
+2. Work your way backward and calculate at each command, the weakest precondition
+3. Once you have reached the beginning, you have calculated the weakest precondition of the entire program
+4. (Mit gegebener Precondition vergleichen)
+5. ​
