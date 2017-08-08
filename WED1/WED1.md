@@ -1423,3 +1423,43 @@ Garrett-Ebenen erlauben Gruppierung der Kriterien
 Und weils so schön ist, noch als Eisberg
 
 ![B9708408-60D7-454E-98C8-EE4270FC4FA9](Bilder/B9708408-60D7-454E-98C8-EE4270FC4FA9.png)
+
+Und mit mehr Details:
+
+![A7D58961-97E3-458B-894D-1B49F3BAE580](Bilder/A7D58961-97E3-458B-894D-1B49F3BAE580.png)
+
+
+
+## Garrett: Oberfläche
+
+### Grafisches Design
+
+* Farbpalette
+* Typografie
+* Icons
+
+### Sensorisches Design
+
+Menschliche Wahrnehmung
+
+Sehschwächen
+
+* ältere Personen: Kontrast ist wichtig
+* Farbenblinde
+
+Farb-Design
+
+* Muss zum Auftraggeber und zur Plattform passen
+* Nicht  mehr als 4 Farben (gut: 2 + 1)
+* Rot ist nicht immer gleich Stop
+* Grün ist nicht immer gleich Gut
+
+Typographie
+
+Serifen verbessern Lesbarkeit bei hoher Auflösung (auf Papier), bei tiefer Auflösung verschlechtern sie die Lesbarkeit.
+
+Fliesstext:
+
+* hohe Kleinbuchstaben
+* keine Serifen (ausser Retina)
+* Satz: Flattersatz
