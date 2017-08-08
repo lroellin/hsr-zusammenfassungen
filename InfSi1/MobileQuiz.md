@@ -250,7 +250,7 @@ Für Lesende: dies sind nur die Fragen, welche ich falsch beantwortet habe und e
   * Wird zur Erstellung des Backups meines Zertifikats genutzt
 * Der X.509 Standard
   * ist ein ITU-T Standard
-*  Der zum Zertifikat im Browser angezeigte Fingerprint ist immer derjenige Hash, welcher signiert wird
+* Der zum Zertifikat im Browser angezeigte Fingerprint ist immer derjenige Hash, welcher signiert wird
   * Falsch
 * Im Browser wird der Anfang des öffentlichen Schlüssels so angegeben: "30 48 02 41 00 fe 1b 84 35?.". Im Cryptool jedoch fängt der öffentliche Schlüssel so an: "fe 1b 84 35?.". Was ist der Grund für diesen Unterschied?
   * Das Cryptool zeigt die interpretierten Daten des Zertifikats an, der Browser zeigt hier die DER-codierten Daten an

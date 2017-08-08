@@ -1533,3 +1533,20 @@ Vorgehen User Centered Design (Buch)
 
 ![22CD1D8B-27F0-4D12-956E-A118B6BC2D09](Bilder/22CD1D8B-27F0-4D12-956E-A118B6BC2D09.png)
 
+
+
+```javasc
+
+var x = 1;
+var y = 2;
+
+function print(x) {
+  console.log(x);
+  console.log(y);
+}
+
+print();
+```
+
+
+
