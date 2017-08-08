@@ -1463,3 +1463,73 @@ Fliesstext:
 * hohe Kleinbuchstaben
 * keine Serifen (ausser Retina)
 * Satz: Flattersatz
+
+Icons:
+
+vom Profi machen lassen, oder Library
+
+## Garrett: Raster
+
+### Interaktionsdesign für einzelne Seite
+
+Wir nehmen nur einen Bruchteil von Web-Seiten wahr
+
+Change Blindness beachten!
+
+Strukturierung von Text:
+
+* White Space
+* Symbole
+* Farbe
+* Grösse/Font
+
+Eye Catcher einsetzen!
+
+Interaktionselemente müssen grundsätzlich sichtbar sein. Rechtsklick, Long Press usw. ist immer kritisch.
+
+# Garrett: Struktur
+
+### Informationsarchitektur
+
+Bei guter Ausschilderung wissen Nutzer stets
+
+* Wo bin ich im Moment
+* Wo kann ich hin
+* Was ist passiert
+
+# User Centered Design
+
+Strategie und Umfang (unterste zwei Garrett-Ebenen)
+
+Benutzerbefragung ist kein User Centered Design
+
+"People don't know what they want"
+
+Wichtige Axiome
+
+* Benutzer sind Experten in ihrem Kontext und ihrer Welt
+* Designer & Techniker sind Experten in dem, wie die Welt sein könnte
+* Um für Nutzer eine "bessere Welt" bauen zu können, muss die aktuelle Welt verstanden sein.
+
+User Centered Design Prozess (DIN EN ISO 9241-210)
+
+1. Planen des Prozesses: Wer macht was, wann und mit welcher Methodik
+2. Benutzungsumfeld analysieren & spezifizieren: Benutzer, Produktumfeld, Konkurrenz
+3. Anforderungen (F & NF) an das Produkt ableiten (messbar!)
+4. Lösung produzieren
+5. Lösung evaluieren gegen Anforderungen
+
+Vorgehen User Centered Design (Buch)
+
+* Analyse: Benutzer und Kontext verstehen
+* Modellieren: Entwurf und Optimierung einer passenden Lösung
+* Spezifikation: die Lösung in die Entwicklung tragen
+* Realisierung: (Unterstützung bei der) Implementierung der Lösung
+* Evaluation: Resultate mit Benutzern überprüfen
+
+![8FBBD0FF-02E4-4239-BFB5-6087954E4915](Bilder/8FBBD0FF-02E4-4239-BFB5-6087954E4915.png)
+
+## Stone
+
+![22CD1D8B-27F0-4D12-956E-A118B6BC2D09](Bilder/22CD1D8B-27F0-4D12-956E-A118B6BC2D09.png)
+
