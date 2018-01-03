@@ -1,8 +1,6 @@
 ---
-itypora-copy-images-to: ./Bilder
+typora-copy-images-to: ./Bilder
 ---
-
-# Recht für Ingenieure
 
 Achtung: es wird hier möglichst vereinfacht geschrieben.
 
@@ -553,8 +551,8 @@ Da die Aussenpolitik aber bei der Legislative liegt, gewinnt der Bundesrat in he
 Die Judikative ist in Zivil- und Strafsachen in drei Instanzen gegliedert.
 
 1.  Bezirksgerichte (Kreis-, Amtsgerichte)
-2. Kantonsgerichte (Obergerichte)
-3. Schweizerisches Bundesgericht (Lausanne)
+2.  Kantonsgerichte (Obergerichte)
+3.  Schweizerisches Bundesgericht (Lausanne)
 
 In Verwaltungssachen welche von kantonalen Behörden ergehen, sind 
 
@@ -779,3 +777,287 @@ Alle sind vor dem Gesetz gleich.
 * Grundsätze der Firmenbildung
 * Schutz der Firma
 * Firmenrecherche (online und mittels REGIX)
+
+# Sachenrecht (dingliches Recht)
+
+![433A3D3E-74C9-49A1-BB78-3090B78E82CF](Bilder/433A3D3E-74C9-49A1-BB78-3090B78E82CF.png)
+
+ZGB
+
+* 4. Teil
+  * Das Eigentum (641-729 ZGB)
+  * Die beschränkten dinglichen Rechte (730-915 ZGB)
+  * Besitz und Grundbuch (919.977 ZGB)
+
+* Weiter: 17-48 SchlT ZGB
+
+
+Weiter wird zwischen beweglichen (Mobilien) und unbeweglichen (Immobilien) unterschieden.
+
+Rechte an Sachen sind **absolute** Rechte. Forderungsrechte sind hingegen **relativ**. 
+
+* Eigentum: es vermittelt dem Berechtigten das umfassende Herrschaftsrecht an einer Sache
+* Beschränkt dingliche Rechte: es vermittelt dem Berechtigten die Herrschaft über die Sache nur in bestimmter Hinsicht
+  * Dienstbarkeiten
+  * Pfandrechte
+
+## Prinzipien
+
+Diese werden im Gesetz nicht ausdrücklich genannt
+
+* Typengebundenheit: die dinglichen Rechte sind zahlenmässig begrenzt und es gibt nur diejenigen, die das Gesetz vorsieht. Im Gegensatz dazu kann man im Vertragsrecht dem Vertragspartner nahezu alle erdenklichen Rechte einräumen
+* Publizitätsprinzip: die dinglichen Rechte müssen für jedermann erkennbar sein, durch Besitz und Grundbuch. Ist eine Hypothek im Grundbuch nicht als Grundpfand eingetragen, so kann ein gutgläubiger Käufer das Grundstück ohne diese Belastung erwerben.
+* Spezialitätsprinzip: dingliche Rechte können nur an individualisierten, einzelnen Objekten bestehen. Es ist also nicht möglich, bspw. ein Unternehmen als solches, als **Sachgesamtheit** dinglich zu übernehmen, sondern es muss jeder Bestandteil einzeln übertragen werden.
+* Akzessionsprinzip: ein dingliches Rechte betrifft eine Sache mit allen ihren Bestandteilen. Über Bestandteile kann nicht anders verfügt werden als  über die Hauptsache. Erbt jemand bspw. einen Wohnwagen, so erbt er damit gleichzeitig die eingebauten Betten, Tische, usw.
+
+Der Begriff der Sache ist schwer abzugrenzen. Ein Bienenschwarm ist eine Sache, eine Schafsherde hingegen eine Ansammlung von einzelnen Schaf-Sachen. Die Sache muss der menschlichen Herrschaft unterworfen werden können.
+
+Begriffsmerkmale einer Sache
+
+* Unpersönlichkeit: menschliche Körper, wie auch Leichname, sind keine Sachen. Ebenso Tiere. Allerdings sind die Bestimmungen des Sachenrechts auf sie anwendbar, falls keine Sonderregelung besteht
+* Körperlichkeit: es muss greifbar sein. Ausnahmsweise wendet man das Sachenrecht auch auf Energien und Naturkräfte analog an. 
+* Abgegrenztheit: muss ein abgegrenztes Dasein im Raum haben. Eine Gaswolke ist daher keine Sache
+* Rechtliche Beherrschbarkeit: muss erworben, angeeignet oder genutzt werden können. Die Sonne kann deshalb keine Sache sein
+* Räumlich begrenzter, körperlicher Gegenstand, ebenso Naturkräfte, aber NICHT Daten im klassisschen Sinne des Sachenrechts. Mit richterlicher Lückenfüllung kann man allerdings eine eigentumsähnliche Verfügungsmacht einräumen.
+
+## Tiere
+
+* wird in einem Testament ein Tier bedacht, müssen die Erben für das Tier tiergerecht sorgen
+* bei Haustieren spricht das Gericht meistens das Tier der Partei zu, die besser für es sorgen kann
+* wird ein Haustier verletzt oder getötet, wird nicht nur der Sachwert, sondern auch der Affektionswert ersetzt
+* Haustiere sind unpfändbar
+* Findet man ein Haustier, muss man es nur innerhalb von zwei Monaten dem bisherigen Eigentümer zurückgeben
+
+## Besitz
+
+Besitz/Eigentum
+
+* Besitzer ist, wer die tatsächliche Herrschft über die Sache ausübt (z.B. Mieter)
+* Eigentümer ist, wer die rechtliche Beziehung zur Sache innehat (z.B. Vermieter)
+
+Bei Fahrnissen wird angenommen, der Besitzer sei der Eigentümer.
+
+Besitz:
+
+* tatsächliche Gewalt: vergisst man einen Schirm im Tram, verliert man die tatsächliche Gewalt und damit den Besitz
+* subjektives Element: auch der Wille zur Ausübung dieser Gewalt muss vorhanden sein. Weiss man nichts vom Schatz im Garten, so gehört er einem auch nicht
+
+Besitzarten (ZGB 970 Abs. 2)
+
+* selbständigen Besitz
+  * derjenige, der zugleich auch Eigentümer der Sache ist
+* unselbständigen Besitz
+  * vom Eigentümer zu einem dinglichen oder persönlichen Recht übertragen bekommen hat (Nutzniesser, Pächter, Mieter, Werkunternehmer)
+
+Wie beim Mit- und Gesamteigentum gibt es auch den Mit- und Gesamtbesitz
+
+Ebenso gibt es den **Besitzdiener**. Er hat die Gewalt vom Eigentümer über die Sache bekommen, ist aber kein unselbständiger Besitzer (Gast im Restaurant mit Messer/Gabel)
+
+## Erwerb des Besitzes
+
+* Derivativer Erwerb: Besitzübertragung mit dem Willen dees bisherigen Besitzers (Schenkung, 223ff OR) oder Kauf (184ff OR). Vertrag auf Eigentumsübertragung bedarf zu seiner Verbindlichkeit der öffentlichen Beurkundung
+* Originärer Erwerb: ohne Willen des bisherigen Besitzers
+  * Aneignung 658/718ff ZGB
+  * Fund 720ff ZGB
+  * Schatz 723 ZGB
+* Besitzübertragungssurrogaten: durch blosse Willsenserklärung (924 ZGB)
+* Besitzanweisung: ein selbständiger Besitzer einer Ware im Lagerhaus weist dieses an, den Besitz einer anderen Person zu vermitteln
+* Besitzeskonstitut: der selbständige Besitzer wird zum unselbständigen. 
+* brevi manu traditio: bisherige unselbständiger Mieter wird zum selbständigen, indem z.B. der Mieter die Sache kauft
+
+## Publizitätsprinzip
+
+![9D331A82-3327-41E0-8211-E3C71F45F2B3](Bilder/9D331A82-3327-41E0-8211-E3C71F45F2B3.png)
+
+![BBA62783-0776-4EA3-8B04-BDDB6676A607](Bilder/BBA62783-0776-4EA3-8B04-BDDB6676A607.png)
+
+## Eigentum
+
+Ein Eigentümer kann die Sache z.B. verkaufen, verschenken oder auch vernichten. Er darf sie von jedem der sie ihm vorenthält verlangen und jede ungerechtfertigte Einwirkung abwehren. 
+
+Das Gesetz unterscheidet zwischen *Bestandteilen* (ZGB 642 2) und *Zugehör* (ZGB 644 2)
+
+Beziehung eines Bestandteils zur Hauptsache:
+
+* innere Verbindung: ohne Bestandteil ist Sache nicht fertig oder vollständig
+* äusserer Zusammenhang: körperlich und phsyikalisch miteinander verbunden. Abtrennung des Bestandteils nur unter äusserer Beschädigung der Hauptsache. (Dach oder Türe zum Haus)
+* Dauerhaftigkeit: von längerer Dauer und nicht bloss vorübergehend. Wille ist entscheidend
+
+Beziehung einer Zugehör zur Hauptsache:
+
+* Zweckbeziehung: dient der Bewirtschaftung, der Benutzung oder Aufbewahrung der Hauptsache, nicht nur vorübergehend. Ortsbeziehung und wille ist entscheidend
+* Sachbeziehung: körperliche Verbindung nicht notwendig. Müssen aber irgendwie zusammenpassen oder aufeinander abgestimmt sein. (Schlüssel zum Schloss, Hülle zum Tennisschläger)
+
+Der Bestandteil darf keinen anderen Eigentümer als die Hauptsache haben! Das ist beim Zugehör möglich.
+
+## Gemeinschaftliches Eigentum
+
+![5450B8F6-6734-4D70-82F7-2D3FE081B0EC](Bilder/5450B8F6-6734-4D70-82F7-2D3FE081B0EC.png)
+
+* Miteigentum
+  * das Recht des Eigentümers zielt auf einen Anteil (z.B. Drittel), der Rest steht anderen Eigentümern zu. Der Eigentümer kann über seinen Teil frei verfügen, auch verkaufen oder verpfänden
+* Gesamteigentum
+  * eine Sache steht mehreren Eigentümern als Gruppe, als Einheit zu. Der Wille des Eigentümers zählt nur als eine Stimme. Für eine Verfügung braucht es immer die Zustimmung aller Gesamteigentümer. Verbindet sie nur das gemeinschaftliche Eigentum, so beurteilt sich ihr Verhältnis nach den Regeln der einfachen Gesellschaft.
+* Stockwerkeigentum: spezielle Form des Miteigentums ZGB 712aff
+
+![7DC327DC-4D8B-458C-A013-A6431A5DD43D](Bilder/7DC327DC-4D8B-458C-A013-A6431A5DD43D.png)
+
+## Grundeigentum
+
+Der Vertrag auf Eigentumsübertragung bedarf der öffentlichen Beurkundung. Der Vertrag wird auch Verpflichtungsgeschäft genannt. Erst der Grundbucheintrag, auch Verfügungsgeschäft genannt, begründet das dingliche Recht.
+
+* originärer Erwerb:
+  * Aneignung 658 ZGB
+  * Bildung neuen Landes: 659 ZGB
+  * Bodenverschiebung: 660 ZGB
+  * Ersitzung: 662 ZGB
+
+Umfang des Grundeigentums ist in 667-712 ZGB geregelt. Widersprechen sich die Grundbuchpläne und die Markierungen auf dem Grundstück, wird die Richtigkeit der Grundbuchpläne vermutet.
+
+Die Ausdehnung nach oben und unten wird durch das Interesse des Grundeigentümers begrenzt. Er muss also den Raum über oder unter dem Erdboden beherrschen und daraus Nutzungsbefugnisse ausüben. Eine Leitung einige Meter unter dem Boden werden ihn beeinträchtigen, ein Tunnel Hundert Meter unter seinem Grundstück weniger
+
+Insbesondere sind auch Bauten, Pflanzen und Quellen enthalten.
+
+Der Grundeigentümer verpflichtet sich, sich übermässiger Einwirkungen auf seinen Nachbarn zu enthalten. Dieser Immissionsschutz (684ff ZGB) ist Grundlage für Beseitigungs-m Unterlassungs-, Präventiv-, und Schadensersatzklage.
+
+Bei Bauten darf das Grundstück des Nachbarn nicht beschädigt werden, konkret das Erdreich nicht in Bewegung gebracht werden. Weiter muss er seinem Nachbarn das Wegrecht einräumen, wenn dieser darauf angewiesen ist, oder auch eine Wasserleitung durch das eigene Grundstück ziehen muss. Auch hier gilt, dass übermässiges nicht hingenommen werden muss. 
+
+## Fahrniseigentum
+
+Derivativer Erwerb
+
+* gültiger, auf Eigentumsübertragung gerichteter Vertrag
+* das Eigentum oder Verfügungsbefugnis liegt beim Veräusserer
+* Übertragung des Besitzes auf den Erwerbenden (Traditio) oder Traditionssurogat (z.B. Besitzeskonstitut)
+
+Originärer Erwerb
+
+* Wenn der Empfänger gutgläubig davon ausgeht, dass der Veräusserer Eigentum der Sache ist, so kann Eigentum beim Empfänger entstehen. Ist die Sache dem Eigentümer aber gegen seinen Willen abhand gekommen, so kann er sie innerhalb von fünf Jahren herausverlangen, unter Umständen aber nur gegen Entgelt (934 2 ZGB)
+* Aneignung: 718 ZGB herrenlose Sache
+* Fund: 720 ZGB nach fünf Jahren unangefochtenen Besitzes geht es in das Eigentum über
+* Verbindung/Vermischung: 727 ZGB: diese neue Sache steht den vorherigen Eigentümern im Miteigentum zu. Wenn die eine Sache der anderen untergeordnet ist, ist der Eigentümer der übergeordneten Sache auch Eigentümer der untergeordneten Sache, dem anderen bleibt lediglich ein Anspruch auf Ausgleichszahlung.
+
+# Datenschutz
+
+Datenschutz = Schutz der **Persönlichkeit** und der **Grundrechte** der Person, über die Daten bearbeitet werden.
+
+Art, 8 EMRK: Recht auf Achtung des Privat- und Familienlebens. (1) jede Person hat das Recht auf **Achtung ihres Privat- und Familienlebens**, ihrer Wohnung und Ihrer Korrespondenz
+
+10 2 BV: Jeder Mensch hat das Recht auf **persönliche Freiheit**, insbesondere auf körperliche und geistige Unversehrtheit und auf Bewegungsfreiheit
+
+13 2 BV: jede Person hat Anspruch auf Schutz vor Missbrauch ihrer persönlichen Daten
+
+28, 28a, 28l ZGB: Wer in seiner **Persönlichkeit widerrechtlich verletzt wird**, kann zu seinem Schutz gegen jeden, der an der Verletzung mitwirkt, das Gericht anrufen. Eine Verletzung ist **widerrechtlich**, wenn sie nicht durch Einwilligung des Verletzen, durch ein überwiegendes privates oder öffentliches Interesse oder durch Gesetz gerechtfertigt ist.
+
+![B54CB4BF-2460-40D9-9EDE-C624539479BA](Bilder/B54CB4BF-2460-40D9-9EDE-C624539479BA.png)
+
+## Datenschutzgesetze
+
+* Bund: Bundesgesetz über den Datenschutz (DSG)
+  * Privatpersonen + private Unternehmungen
+  * Bundesorgane
+* Kantone: eigene Datenschutzgesetze
+  * öffentliche Organe auf kantonaler und kommunaler Ebene
+  * mit öffentlichen Aufgaben betraute Private
+
+## Personendaten
+
+Alle Angaben, die sich auf eine bestimmte Person oder *bestimmbare* Person beziehen (3 a DSG)
+
+Kategorien
+
+* gewöhnliche Personendaten: 3 a DSG
+* besonders schützenswerte Personendaten: 3 c DSG
+  * religiöse, weltanschauliche, politische oder gewerkschaftliche Ansichten oder Tätigkeiten
+  * Gesundheit, Intimsphäre, Rassenzugehörigkeit
+  * Massnahmen der sozialen Hilfe
+  * administrative, strafrechtliche Verfolgungen und Sanktionen
+* Persönlichkeitsprofil: 3 d DSG
+  * Zusammenstellung von Daten, die eine Beurteilung wesentlicher Aspekte der Persönlichkeit einer natürlichen Person erlaubt
+
+### Umgang mit Personendaten
+
+Jeder Umgang mit Personendaten, unabhängig von den angewandten Mitteln und Verfahren, insbesondere das Beschaffen, Aufbewahren, Verwenden, Umarbeiten, Bekanntgeben, Archivieren und Vernichten von Daten. 3 e DSG
+
+Bekanntgeben von Personendaten: das Zugänglicmachen von Personendaten wie das Einsichtgewähren, Weitergeben oder Veröffentlichen (3 f DSG)
+
+## Rechtfertigung
+
+![0B0FBE01-C84D-4A65-B6F1-22C167E66DED](Bilder/0B0FBE01-C84D-4A65-B6F1-22C167E66DED.png)
+
+Gründe
+
+* Einwilligung der betroffenen Person
+* überwiegendes privates oder öffentliches Interesse
+* gesetzliche Grundlage
+
+## Prinzipien
+
+![92965557-AC54-40EA-864D-9687B17F6D14](Bilder/92965557-AC54-40EA-864D-9687B17F6D14.png)
+
+Rechte
+
+* Auskunftsrecht (8 DSG)
+  * höchstpersönlich
+  * grundsätzlich kostenlos
+  * dient der Transparenz und Kontrolle
+* Weitere Rechte nach DSG (15 DSG)
+  * Berichtigung
+  * Korrektur
+  * Sperrung
+* Persönlichkeitsverletzung (28, 28a, 28l ZGB)
+* Schadenersatz, Genugtuung (41/97 OR)
+* Straftatbestände
+  * Verletzung der Auskunfts-, Melde- und Mitwirkungspflichten (Art. 34 DSG)
+  * Verletzung des Geheim- oder Privatbereichs durch Aufnahmegeräte (Art. 179quater StGB)
+  * unbefugtes Beschaffen von Personendaten(Art. 179novies StGB)
+  * Verletzung des Amts- oder Berufsgeheimnisses(Art. 320 und 321 StGB)
+  * «Computerdelikte»(Art.143,143bis,144bisund147StGB)
+
+Zuständigkeiten
+
+* Bund: eidgenössischer Datenschutz- und Öffentlichkeitsbeauftragter (EDOEB)
+  * Aufsicht über und Beratung von Privaten und Bundesorganen
+  * Öffentlichkeitsprinzip
+* Kantone kantonale Datenschutzbeauftragte
+  * Aufsucht über und Beratung von Behörden und mit öffentlichen Aufgaben betraute Private
+  * teilw. Öffentlichkeitsprinzip
+
+## Entwicklung
+
+Information als Wirtschaftsgut
+
+Staatsüberwachung
+
+Spannungsfeld
+
+* Technologie
+  * global
+  * vernetzt
+  * standardisiert
+  * Benutzung einfach
+* Recht
+  * national
+  * kollidiert
+  * nicht standardisiert
+  * Anwendbarkeit des Rechts im Internet ist schwierig
+
+## Vergleich
+
+Europa/Schweiz
+
+![E1052C70-22DE-40D9-AD14-D3BE07591F52](Bilder/E1052C70-22DE-40D9-AD14-D3BE07591F52.png)
+
+USA/Schweiz
+
+![67EA1B18-5121-4B20-A632-60DC56F43AC2](Bilder/67EA1B18-5121-4B20-A632-60DC56F43AC2.png)
+
+## Vorgehensweise
+
+1. prüfen eines Rechtfertigungsgrundes für die Rechtmässigkeit der Bearbeitung von Personendaten
+2. Einhaltung der übrigen datenschutzrechtlichen Prinzipien
+
+## Mehrdimensionaler Datenschutz
+
+![0CC33E10-0C5E-48C0-B70C-18E17F1DC849](Bilder/0CC33E10-0C5E-48C0-B70C-18E17F1DC849.png)
+
