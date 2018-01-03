@@ -596,3 +596,132 @@ Löst den Toast ab. Flexibler, da auch eine Action angegeben werden kann.
 Wird in XML deklariert und mit einer PreferenceActivity Subklasse eingebunden
 
 ![4F95871A-ED20-4BA4-ABFA-D20C7702BACC](Bilder/4F95871A-ED20-4BA4-ABFA-D20C7702BACC.png)
+
+# Listen und Persistenz
+
+## Listen
+
+Listen verwenden einen Adapter, um das Listen-Itemlayout zu erhalten, und das eigentliche Array. Für vordefinierte Layouts verwendet man:
+
+```java
+ArrayAdapter<String> adapter = 
+  new ArrayAdapter<String>(
+	this,
+	android.R.layout.simple_list_item_1,
+	myStringArray);
+
+listView.setAdapter(adapter);
+```
+
+Man kann auch eigene, ganz einfache Layouts bauen und dem Adapter sagen, was er abfüllen soll
+
+![665D302F-F7E8-4FB8-A30A-9B4282E1524F](Bilder/665D302F-F7E8-4FB8-A30A-9B4282E1524F.png)
+
+## Eigener ArrayAdapter
+
+Man kann auch einen eigenen Array-Adapter bauen, der dann die Daten abfüllt:
+
+![68366010-C988-4030-9389-592134517288](Bilder/68366010-C988-4030-9389-592134517288.png)
+
+`getView` hat die folgenden Aufgaben
+
+* Layout erstellen, falls es nicht schon existiert
+* Anzuzeigendes Objekt finden
+* Objektdaten im Layout festlegen
+
+> Achtung: die convertView kommt so daher, wie sie beim letzten Mal war. Wenn man also z.B. im "Default-Fall" schwarze Farbe verwendet, und in einem anderen Fall rote Farbe, so muss man diese Farben immer explizit setzen. Erhält man ein "rotes" Element zum recyclen, so bleibt es rot, auch wenn das Layout ursprünglich mal schwarz sagte.
+
+Pattern:
+
+```java
+public View getView(int position, View convertView, ViewGroup parent) {
+  final Module module = modulList.get(position); // Domaindaten
+  
+  if (convertView == null) { // Layout instanzieren beim 1. Mal
+    LayoutInflater layoutInflater = 
+      (...) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    convertView = layoutInflater.inflate(R.layout.rowlayout, null)
+  }
+  
+  // Konkrete Felder finden
+  TextView textView = convertView.findViewById(R.id.textView);
+  CheckBox checkBox = convertView.convertView.findViewById(R.id.checkBox);
+  
+  // Konkrete Felder abfüllen
+  textView.setText(module.getCode());
+  checkBox.setText(module.getName());
+  checkBox.setChecked(module.isSelected());
+  
+  // Listener setzen
+  checkBox.setOnClickListener(new View.OnClickListener() {
+    public void onClick(View v) {
+      CheckBox cb = (CheckBox) v;
+      module.setSelected(cb.isChecked());
+    }
+  })
+  
+  return convertView;
+}
+```
+
+Die `findViewById`-Methode ist eine ziemlich teure Operation. Wir können die Views aber taggen, einmal mit Key-Value oder mit einem Objekt. Wir können also Daten an eine View hängen.
+
+Dazu hängen wir an unsere convertView einfach einen Tag mit einem Pair der beiden Views:
+
+```java
+if (convertView == null) {
+  // ...
+  TextView textView = convertView.findViewById(R.id.textView);
+  CheckBox checkBox = convertView.convertView.findViewById(R.id.checkBox);
+  
+  Pair<TextView, CheckBox> views = new Pair<>(textView, checkBox);
+  // statt Pair auch eigene Klasse (ViewHolder)
+}
+
+Pair<TextView, CheckBox> views = (Pair<TextView, CheckBox>) convertView.getTag();
+TextView textView = views.first;
+Checkbox checkBox = views.second;
+```
+
+## RecyclerView
+
+RecyclerView ist der neue, heisse Scheiss.
+
+* Mehrere LayoutManager (horizontale/vertikale Liste, Grid)
+* Animationen für Hinzufügen/Entfernen von Einträgen
+* Recycling von Elementen fest eingebaut
+
+Verschlechterungen
+
+* Click-Handling ist mühsamer, kein `AdapterView.OnClickListener` mehr, dafür können Touch-Events generell behandelt werden
+
+### Komponenten
+
+* `Adapter`, analog zu einem `ArrayAdapter`, leicht anderes API
+* `ViewHolder`, Klasse die die Views zwischenspeichert (wie die Pair-Klasse)
+* `LayoutManager` (optional), Default für übliche Layouts
+* `ItemDecoration` (optional), Trennlinien oder andere Dekorationen um die Elemente (Blüemli und so)
+* `ItemAnimator` (optional), animiert hinzufügen/entfernen und Scrolling von Elementen
+
+### Interface
+
+![740EB79F-C197-453E-9288-7BD4BB4A8876](Bilder/740EB79F-C197-453E-9288-7BD4BB4A8876.png)
+
+### Setup
+
+![0B4B2126-EB73-4743-928B-7BEEEAC0C664](Bilder/0B4B2126-EB73-4743-928B-7BEEEAC0C664.png)
+
+### View aktualisieren
+
+Die RecyclerView bemerkt Änderungen an den Daten nicht von selbst. Um eine Aktualisierung zu veranlassen:
+
+* `notifyDataSetChanged()`
+* `notifyItemChanged(positionToUpdate)`
+* `notifyItemInserted(insertPosition)`
+* `notifyItemRemoved(removePosition)`
+
+Diese gibts auch noch in einer `notifyItemRange`-Variante
+
+## Best Practice
+
+Leere Listen sollten vermieden werden. Besser ein Platzhalter, oder beschreiben wie ein neuer Eintrag in die Liste kommt.
