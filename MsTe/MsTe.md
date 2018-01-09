@@ -260,3 +260,13 @@ Ab C#7.0 auch `_` zur optischen Strukturierung von Zahlen. Wird vom Compiler sch
 | protected          | Innerhalb des jeweiligen Typen (Klasse / Struct) oder abgeleiteter Klasse sichtbar |
 | internal           | Innerhalb des jeweiligen Assemblies sichtbar |
 | protected internal | Innerhalb des jeweiligen Typen (Klasse / Struct) oder abgeleiteter Klasse sichtbaroderInnerhalb des jeweiligen Assemblies sichtbar |
+
+| Typ       | Standard | Zulässig (Top-Level)* | Standard für Members | Zulässig für Members                     |
+| --------- | -------- | --------------------- | -------------------- | ---------------------------------------- |
+| class     | internal | public / internal     | private              | public<br />protected<br />internal<br />private<br />protected internal |
+| struct    | internal | public / internal     | private              | public<br />internal<br />private        |
+| enum      | internal | public / internal     | public               | –                                        |
+| interface | internal | public / internal     | public               | –                                        |
+| delegate  | internal | public / internal     | –                    | –                                        |
+
+`*` gilt nicht für Nested Types
