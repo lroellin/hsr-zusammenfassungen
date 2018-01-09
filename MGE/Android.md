@@ -80,7 +80,7 @@ Tipp: Daten in `onPause` sichern, da man nicht sicherstellen kann dass die ander
 
 Activities werden in einem Stack verwaltet.
 
-> Activies eines Stacks können zu verschiedenen Apps gehören
+> Activities eines Stacks können zu verschiedenen Apps gehören
 
 ![83A3DDD6-EC12-4010-B9F9-23300150D32C](Bilder/83A3DDD6-EC12-4010-B9F9-23300150D32C.png)
 
@@ -539,8 +539,8 @@ Von Fragments aus können auch Menü-Optionen hinzugefügt werden. Dazu gibt es 
 Welche Actions in der Action-Bar angezeigt werden, hängt vom
 
 *  verfügbaren Platz ab
-* der Menü-Konfiguration ab (`showAsAction`)
-* Dazu gibt es sogenannte ActionViews, wie z.B. ein Plus-Button der expandiert
+*  der Menü-Konfiguration ab (`showAsAction`)
+*  Dazu gibt es sogenannte ActionViews, wie z.B. ein Plus-Button der expandiert
 
 ## Split Action Bar / Tabs
 
@@ -783,7 +783,7 @@ Key-Value-Paare mit Typen:
 
 Alternativ zu `MODE_PRIVATE`: `MODE_MULTI_PROCESS`
 
-![3AD1AB2E-3F49-480D-A01F-B431C121617A](Bilder/3AD1AB2E-3F49-480D-A01F-B431C121617A.png)
+![g3AD1AB2E-3F49-480D-A01F-B431C121617A](Bilder/3AD1AB2E-3F49-480D-A01F-B431C121617A.png)
 
 Nützlich: `settings.onSharedPreferenceChangeListener` (wahrscheinlich Listener, wenn eine Änderung gemacht wurde, so dass man neu laden kann)
 
