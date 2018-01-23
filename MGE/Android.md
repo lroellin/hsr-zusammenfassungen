@@ -1414,7 +1414,7 @@ Wir brauchen
 * `SensorEventListener` um sich für Updates von Sensordaten zu registrieren
 * `SensorEvent` um die Sensordaten (Werte, Zeitpunkt) auszulesen
 
-Ein Sensor liefert nur Rohdaten (`float []`,), je nach Sensor sind diese unterschiedlich zu interpretieren
+Ein Sensor liefert nur Rohdaten (`float []`), je nach Sensor sind diese unterschiedlich zu interpretieren
 
 (In der Vorlesung gibt es noch einen Codeblock, wie mans konkret anspricht)
 

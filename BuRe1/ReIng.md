@@ -1061,3 +1061,8 @@ USA/Schweiz
 
 ![0CC33E10-0C5E-48C0-B70C-18E17F1DC849](Bilder/0CC33E10-0C5E-48C0-B70C-18E17F1DC849.png)
 
+# Prüfung
+
+Im Zivilrechtsverfahren bestimmen die Verfahrensparteien den Sachverhalt
+
+Im Zivilverfahren bestimmen die Verfahrensparteien den Prozessgegenstand
