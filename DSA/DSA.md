@@ -122,7 +122,7 @@ revert: abbrechen, alten Stand wiederherstellen
 
 assert: sollte nie falsch liegen
 
-require: sicherstellen, kann falsch liegen
+require: sicherstellen, kann falsch liegen. Gas bis dahin kostet, der Rest wird aber zurückgegeben
 
 ## Events
 
@@ -134,7 +134,7 @@ Log that something has occurred (`emit`)
 
 ## Transaction Ordering
 
-Mining order counts. E.g, a buyer contract checks the price, and then executes `buy`. When the seller contract is changed to increase the price, and this change is mined first, the buyer pays more than he initially wanted.
+Mining order counts. E.g, a buyer contract executes a seller contract's `buy`. This function pays the price stated in the contract. When the seller contract is changed to increase the price, and this change is mined first, the buyer pays more than he initially wanted.
 
 ## Reentrancy Attack
 
@@ -180,7 +180,7 @@ It is safe to receive any number of transactions to a given address until an out
 
 Now requires a "coordinator"/trusted node. Every 35 seconds, this node makes a normal transaction that confirms 2 tx (called milestone). Check tx: get latest milestone and check
 
-IOTA Snapshot: pruning of the ledger, removing all events and addresses which don't have a positive balance. 
+IOTA Snapshot: pruning of the ledger, removing all events and addresses which don't have a positive balance.
 
 # Consensus & Scalability
 
